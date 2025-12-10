@@ -78,10 +78,11 @@ xmouse 0x01         # Faster (5ms - may feel jittery)
 If XMouse is already running, launch with a new config byte to update settings instantly:
 
 ```bash
-xmouse 0x13         # Start daemon
+xmouse 0x13         # Start daemon or update config
 xmouse 0x21         # Update to 20ms (no restart needed!)
 xmouse 0x93         # Enable debug mode
 xmouse 0x13         # Disable debug mode
+xmouse 0x00         # Stop daemon
 ```
 
 ### Command Arguments
@@ -140,9 +141,8 @@ See [BUILDING.md](BUILDING.md) for detailed compilation instructions.
 
 **Quick start:**
 ```bash
-./setup.ps1         # One-time: install VBCC + NDK
-make                # Build development version
-make MODE=release   # Build release (debug code removed)
+./setup.ps1               # One-time: install VBCC + NDK + Thirds
+make build MODE=release   # Build release (debug code removed)
 ```
 
 For architecture details and debug console information, see [TECHNICAL.md](docs/TECHNICAL.md).
