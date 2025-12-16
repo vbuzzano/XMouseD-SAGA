@@ -135,12 +135,10 @@ static struct InputEvent s_eventBuf;   // Reusable event buffer
 #define POLL_STATE_TO_IDLE   3  // Returning to idle, interval ascending toward idleUs
 
 // Profile names
-#define PROFILE_NAME_COMFORT    "COMFORT"
-#define PROFILE_NAME_BALANCED   "BALANCED"
-#define PROFILE_NAME_REACTIVE   "REACTIVE"
-#define PROFILE_NAME_ECO        "ECO"
-
-// Fixed mode names (when bit 6 = 1)
+#define MODE_NAME_COMFORT       "COMFORT"
+#define MODE_NAME_BALANCED      "BALANCED"
+#define MODE_NAME_REACTIVE      "REACTIVE"
+#define MODE_NAME_ECO           "ECO"
 #define MODE_NAME_MODERATE      "MODERATE"   // COMFORT fixed (20ms)
 #define MODE_NAME_ACTIVE        "ACTIVE"     // BALANCED fixed (10ms)
 #define MODE_NAME_INTENSIVE     "INTENSIVE"  // REACTIVE fixed (5ms)
@@ -166,18 +164,18 @@ typedef struct
 static const AdaptiveMode s_adaptiveModes[] = 
 {
     // COMFORT (00): Relaxed, tolerant
-    { PROFILE_NAME_COMFORT, MODE_NAME_MODERATE, 150000, 60000, 20000, 1100, 15000, 500000, 500000 },
+    { MODE_NAME_COMFORT, MODE_NAME_MODERATE, 150000, 60000, 20000, 1100, 15000, 500000, 500000 },
     
     // BALANCED (01): Balanced, universal - DEFAULT
-    { PROFILE_NAME_BALANCED, MODE_NAME_ACTIVE, 100000, 30000, 10000, 600, 1200, 500000, 1500000 },
+    { MODE_NAME_BALANCED, MODE_NAME_ACTIVE, 100000, 30000, 10000, 600, 1200, 500000, 1500000 },
     
     // REACTIVE (10): Nervous, snappy
-    { PROFILE_NAME_REACTIVE, MODE_NAME_INTENSIVE, 50000, 15000, 5000, 500, 250, 500000, 3000000 },
+    { MODE_NAME_REACTIVE, MODE_NAME_INTENSIVE, 50000, 15000, 5000, 500, 250, 500000, 3000000 },
 
     // ECO (11): Low-power/quiet
     // Dynamic: 200→80→40ms | Fixed: 40ms (PASSIVE)
     // stepDecUs=2000, stepIncUs=4000, thresholds: 500ms/1.5s
-    { PROFILE_NAME_ECO, MODE_NAME_PASSIVE, 200000, 80000, 40000, 2000, 4000, 500000, 1500000 }
+    { MODE_NAME_ECO, MODE_NAME_PASSIVE, 200000, 80000, 40000, 2000, 4000, 500000, 1500000 }
 };
 
 // Adaptive state variables
