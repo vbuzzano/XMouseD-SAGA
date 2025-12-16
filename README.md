@@ -1,15 +1,22 @@
-# Saga eXtended Mouse Daemon (XMouseD)
+# XMouseD - eXtended Mouse Driver for Apollo 68080 SAGA Hardware
 
-Minimal, efficient mouse wheel daemon (7.4 KB) for Vampire/Apollo SAGA chipset.
+Minimal, efficient mouse wheel and extra buttons driver for Vampire/Apollo 68080 SAGA chipset.
 
-XMouseD is a lightweight background daemon that monitors USB mouse wheel and button movements from the SAGA chipset hardware, then injects standard NewMouse-compatible scroll events into the Amiga input system. This allows any Amiga application to scroll using your mouse wheel without special drivers or modifications.
+XMouseD is a lightweight background daemon that monitors USB mouse wheel and button from the SAGA chipset hardware, then injects standard NewMouse-compatible scroll events into the Amiga input system. This allows Amiga programs to scroll using your mouse wheel without special drivers or modifications.
+
+**Compatibility Note:** Also works with IControl preferences on AmigaOS 3.2, or use any commodity for wheel and extra mouse features like [FreeWheel](https://aminet.net/package/util/mouse/FreeWheel) from Aminet.
 
 ## Compatibility
 
 ### ✅ Works On (SAGA Chipset with Apollo 68080)
 
-- **A6000 Unicorn**
-- **Vampire V4+ Standalone Firebird**
+XMouseD requires Apollo 68080 accelerators with SAGA chipset and USB mouse port. Confirmed working on:
+
+- **Vampire V4 Standalone**
+- **A6000 Unicorn** <- not tested
+
+And accelerators cards (not tested):
+
 - **Vampire V4 Icedrake**
 - **Vampire V4 Manticore**
 - **Vampire V4 Salamander**
@@ -19,13 +26,19 @@ Requires USB mouse with scroll wheel (and extra buttons 4 & 5) connected to the 
 
 
 ### ✅ Compatible & Recommended OS
-- **ApolloOS 9.x** (AROS-based, fully compatible)
+
+XMouseD is tested and supported on these operating systems:
+
 - **AmigaOS 3.2** (recommended)
 - **AmigaOS 3.9** (with NDK 3.9 libraries)
+- **ApolloOS 9.x** (AROS-based, fully compatible)
 - **AROS** (should work, ApolloOS is AROS-based)
 
 
 ### ❌ Does NOT Work On
+
+XMouseD will NOT function on the following platforms (missing SAGA USB hardware):
+
 - **Vampire V2** (SAGA exists but no USB port for mouse hardware support)
 - **Classic Amiga** (A500, A1200, A4000, etc.)
 - **Emulators** (UAE, WinUAE, FS-UAE)
@@ -37,42 +50,74 @@ Requires USB mouse with scroll wheel (and extra buttons 4 & 5) connected to the 
 
 ## Installation
 
-[FAIRE UN PETIT TEXTE: installation très simple en utilisant Install ou en manuellement]
+XMouseD can be installed using the included Amiga Installer script or manually.
 
-1. Download `XMouseD` from [Releases](https://github.com/your-repo/releases)
-2. Copy to `C:` (or `SYS:C/`)
-3. Add to `S:User-Startup`:
+### Method 1: Amiga Installer (Recommended)
+
+1. Download the XMouseD release archive
+2. Extract to RAM: or any temporary location
+3. Double-click the **Install** icon
+4. Follow the on-screen prompts
+5. Reboot when installation completes
+
+The Installer will copy `XMouseD` to `C:` and add it to your `S:User-Startup` automatically.
+
+### Method 2: Manual Installation
+
+1. Copy `XMouseD` to `C:` (or `SYS:C/`)
+2. Add to `S:User-Startup`:
    ```
-   XMouseD
+   C:XMouseD >NIL:
    ```
 4. Restart or run `XMouseD` manually
 
-Your mouse wheel now works in all applications. Press CTRL+C to stop, or just reboot.
-
-**Note**: Future versions will include an Installer script. For now, manual setup via User-Startup.
-
----
 
 ## Usage & Configuration
 
+XMouseD runs as a background daemon and can be controlled via command line arguments. Configuration uses a simple hex byte format.
+
 ### Basic Commands
+
+Start, stop, or toggle XMouseD with these commands:
+
 
 ```bash
 XMouseD              # Toggle (start if stopped, stop if running)
-XMouseD START        # Start with default config (wheel+buttons, 10ms)
+XMouseD START        # Start with default config (wheel+buttons)
 XMouseD STOP         # Stop daemon gracefully
-XMouseD 0xBYTE       # Start with custom config byte
+XMouseD 0xBYTE       # Start with custom config byte 
 ```
 
-### Adjusting Scroll Speed
+### Configuration
 
-If scrolling is too slow or too fast, adjust polling interval without restarting:
+XMouseD supports two polling modes:
+
+**Adaptive Mode** - Smart polling that adjusts to your usage:
+- When idle (reading, thinking): polls slowly to save CPU
+- When scrolling: instantly speeds up for smooth response
+- *Example*: Reading a document = minimal CPU usage, scrolling through code = instant response
+
+**Normal Mode** - Constant polling rate:
+- Same speed all the time, predictable behavior
+- Choose your preferred reactivity level
+- *Example*: Always ready at the same speed, no variation
+
+Adaptive Modes (recommended):
 
 ```bash
-XMouseD 0x13         # Default speed (10ms - recommended)
-XMouseD 0x21         # Slower/smoother (20ms)
-XMouseD 0x31         # Even slower (40ms - better on slow CPU)
-XMouseD 0x01         # Faster (5ms - may feel jittery)
+XMouseD 0x13         ; BALANCED (default, responsive for everyday use)
+XMouseD 0x03         ; COMFORT (occasional use, reactive when needed)
+XMouseD 0x23         ; REACTIVE (instant response, fast reactivity)
+XMouseD 0x33         ; ECO (minimal CPU, slower reactivity)
+```
+
+Normal Modes (constant reactivity):
+
+```bash
+XMouseD 0x53         ; ACTIVE (medium reactivity)
+XMouseD 0x43         ; MODERATE (low reactivity)
+XMouseD 0x63         ; INTENSIVE (high reactivity)
+XMouseD 0x73         ; PASSIVE (very low reactivity)
 ```
 
 ### Hot Config Update
@@ -80,11 +125,11 @@ XMouseD 0x01         # Faster (5ms - may feel jittery)
 If XMouse is already running, launch with a new config byte to update settings instantly:
 
 ```bash
-XMouseD 0x13         # Start daemon or update config
-XMouseD 0x21         # Update to 20ms (no restart needed!)
-XMouseD 0x93         # Enable debug mode
-XMouseD 0x13         # Disable debug mode
-XMouseD 0x00         # Stop daemon
+XMouseD 0x13         ; Start daemon or update config
+XMouseD 0x23         ; Switch to REACTIVE mode (no restart needed!)
+XMouseD 0x93         ; Enable debug mode
+XMouseD 0x13         ; Disable debug mode
+XMouseD 0x00         ; Stop daemon
 ```
 
 ### Command Arguments
@@ -104,37 +149,36 @@ Advanced users can customize behavior with a 2-digit hex byte:
 Bit 0 (0x01)     - Wheel enabled (sends scroll events)
 Bit 1 (0x02)     - Extra buttons 4 & 5 enabled
 Bits 2-3         - Reserved
-Bits 4-5         - Poll speed:
-                   00 = 5ms   (fast, may use more CPU)
-                   01 = 10ms  (default, balanced)
-                   10 = 20ms  (smooth, efficient)
-                   11 = 40ms  (power saving)
-Bit 6            - Reserved
+Bits 4-6         - Modes:
+                   000 = COMFORT   (adaptive mode)
+                   001 = BALANCED  (adaptive mode) [DEFAULT]
+                   010 = REACTIVE  (adaptive mode)
+                   011 = ECO       (adaptive mode)
+                   100 = MODERATE  (normal mode)
+                   101 = ACTIVE    (normal mode)
+                   110 = INTENSIVE (normal mode)
+                   111 = PASSIVE   (normal mode)
 Bit 7 (0x80)     - Debug mode (opens debug console)
 ```
 
 **Examples:**
-- `0x13` = Wheel ON, Buttons ON, 10ms (default)
-- `0x93` = Same but with debug console
-- `0x01` = Wheel only, 5ms (no buttons)
-- `0x21` = Wheel only, 20ms polling
+- `0x13` = Wheel ON, Buttons ON, BALANCED adaptive (default)
+- `0x53` = Wheel ON, Buttons ON, ACTIVE normal mode
+- `0x93` = Same as 0x13 but with debug console
+- `0x03` = Wheel ON, Buttons ON, COMFORT adaptive
+- `0x43` = Wheel ON, Buttons ON, MODERATE normal mode
 
 
 ## How It Works (Simple)
 
 ```
 1. XMouse reads USB wheel counter from SAGA hardware
-2. Calculates movement delta (~10ms per poll)
+2. Calculates movement delta
 3. Sends standard scroll commands to Amiga
 4. Apps recognize wheel and scroll normally
 ```
 
 No special software in apps needed - wheel "just works" everywhere.
-
-
-## Roadmap & Future Plans
-
-See [ROADMAP.md](ROADMAP.md) for detailed timeline.
 
 
 ## Building From Source
@@ -147,9 +191,6 @@ See [BUILDING.md](BUILDING.md) for detailed compilation instructions.
 make build MODE=release   # Build release (debug code removed)
 ```
 
-For architecture details and debug console information, see [TECHNICAL.md](docs/TECHNICAL.md).
-
-
 ## License
 
 **MIT License** - Free and open source. Use, modify, and distribute freely.
@@ -160,9 +201,4 @@ See [LICENSE](LICENSE) for full legal text.
 
 ## Support & Feedback
 
-Found a bug? Have a feature request? Open an issue on GitHub or reach out to the Apollo community Discord.
-
-**Author:** Vincent Buzzano (ReddoC)  
-**Version:** 1.0-beta1  
-**Updated:** December 10, 2025
-
+Found a bug? Have a feature request? Open an issue on GitHub.
