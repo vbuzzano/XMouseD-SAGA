@@ -272,3 +272,92 @@ xmoused 0x13  # Debug OFF
 
 **Build:** Compile-time controlled via `#ifndef RELEASE`.
 
+---
+
+## Building From Source
+
+### Prerequisites
+
+**Required tools:**
+- PowerShell 5.1+
+
+**First-time setup:**
+```powershell
+> .\setup.ps1
+```
+
+This downloads and configures:
+- VBCC toolchain (compiler, assembler, linker)
+- Amiga NDK 3.9 headers and libraries
+- Environment variables in `.env` file
+
+### Build Commands
+
+**Standard development build:**
+```powershell
+> make
+> make build
+> make rebuild
+```
+
+Output: `dist/xmoused` with debug symbols, optimizations enabled (-O3 -speed)
+
+
+**Release build:**
+```powershell
+> make release
+> make build MODE=release
+> make rebuild MODE=release
+```
+
+**Clean build files:**
+```powershell
+make clean
+```
+
+**Compiler flags:**
+- `-O3`: All optimizations (single-file program, no cross-module needed)
+- `-speed`: Prefer speed over size (critical for polling loop responsiveness)
+- `-sc`: Small code model (16-bit PC-relative calls)
+- `-schedule`: Instruction scheduling for 68080 dual-pipeline
+- `-cpu=68080`: Use 68080-specific instructions (Vampire/Apollo exclusive)
+
+**Target:** `aos68k` (AmigaOS m68k, requires exec.library v39+)
+
+### Troubleshooting
+
+**Error: "vc not found"**
+- Run `.\setup.ps1` to install VBCC
+- Verify `.env` file exists with correct `VBCC` path
+
+**Error: "Cannot find include file"**
+- Check `VBCC` and `NDK39` paths in `.env`
+- Verify `vendor/NDK39/Include/include_h/` exists
+
+**Linker errors about undefined symbols:**
+- Ensure global bases are declared: `SysBase`, `DOSBase`
+- Check inline pragma headers are included
+- Verify `-nostdlib` flag is present (no standard library linking)
+
+**Wrong CPU instructions generated:**
+- Confirm `CPU=68080` in Makefile (line 48)
+- Release build uses same CPU target as dev build
+
+### Upload to Vampire
+
+**Prerequisites:**
+- Vampire V4 running and accessible on network
+- ApolloExplorer Connection Protocol (ACP) configured
+- `APOLLO_V4_HOST` variable in `.env`
+
+**Upload command:**
+```powershell
+make upload
+```
+
+This performs:
+1. Build the executable (if needed)
+2. Upload `dist/xmoused` to Vampire via ACP
+
+
+

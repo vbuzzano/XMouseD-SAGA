@@ -181,15 +181,12 @@ Bit 7 (0x80)     - Debug mode (opens debug console)
 No special software in apps needed - wheel "just works" everywhere.
 
 
-## Building From Source
+## Developer Documentation
 
-See [BUILDING.md](BUILDING.md) for detailed compilation instructions.
+For developers and technical users:
 
-**Quick start:**
-```bash
-./setup.ps1               # One-time: install VBCC + NDK + Thirds
-make build MODE=release   # Build release (debug code removed)
-```
+- **[VISION.md](docs/VISION.md)** - Design philosophy and project goals
+- **[TECHNICAL.md](docs/TECHNICAL.md)** - Architecture, hardware interface, polling system, and build instructions
 
 ## License
 
