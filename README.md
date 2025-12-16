@@ -1,8 +1,8 @@
-# Saga eXtended Mouse (XMouse)
+# Saga eXtended Mouse Daemon (XMouseD)
 
 Minimal, efficient mouse wheel daemon (7.4 KB) for Vampire/Apollo SAGA chipset.
 
-XMouse is a lightweight background daemon that monitors USB mouse wheel and button movements from the SAGA chipset hardware, then injects standard NewMouse-compatible scroll events into the Amiga input system. This allows any Amiga application to scroll using your mouse wheel without special drivers or modifications.
+XMouseD is a lightweight background daemon that monitors USB mouse wheel and button movements from the SAGA chipset hardware, then injects standard NewMouse-compatible scroll events into the Amiga input system. This allows any Amiga application to scroll using your mouse wheel without special drivers or modifications.
 
 ## Compatibility
 
@@ -39,13 +39,13 @@ Requires USB mouse with scroll wheel (and extra buttons 4 & 5) connected to the 
 
 [FAIRE UN PETIT TEXTE: installation très simple en utilisant Install ou en manuellement]
 
-1. Download `xmouse` from [Releases](https://github.com/your-repo/releases)
+1. Download `XMouseD` from [Releases](https://github.com/your-repo/releases)
 2. Copy to `C:` (or `SYS:C/`)
 3. Add to `S:User-Startup`:
    ```
-   xmouse
+   XMouseD
    ```
-4. Restart or run `xmouse` manually
+4. Restart or run `XMouseD` manually
 
 Your mouse wheel now works in all applications. Press CTRL+C to stop, or just reboot.
 
@@ -58,10 +58,10 @@ Your mouse wheel now works in all applications. Press CTRL+C to stop, or just re
 ### Basic Commands
 
 ```bash
-xmouse              # Toggle (start if stopped, stop if running)
-xmouse START        # Start with default config (wheel+buttons, 10ms)
-xmouse STOP         # Stop daemon gracefully
-xmouse 0xBYTE       # Start with custom config byte
+XMouseD              # Toggle (start if stopped, stop if running)
+XMouseD START        # Start with default config (wheel+buttons, 10ms)
+XMouseD STOP         # Stop daemon gracefully
+XMouseD 0xBYTE       # Start with custom config byte
 ```
 
 ### Adjusting Scroll Speed
@@ -69,10 +69,10 @@ xmouse 0xBYTE       # Start with custom config byte
 If scrolling is too slow or too fast, adjust polling interval without restarting:
 
 ```bash
-xmouse 0x13         # Default speed (10ms - recommended)
-xmouse 0x21         # Slower/smoother (20ms)
-xmouse 0x31         # Even slower (40ms - better on slow CPU)
-xmouse 0x01         # Faster (5ms - may feel jittery)
+XMouseD 0x13         # Default speed (10ms - recommended)
+XMouseD 0x21         # Slower/smoother (20ms)
+XMouseD 0x31         # Even slower (40ms - better on slow CPU)
+XMouseD 0x01         # Faster (5ms - may feel jittery)
 ```
 
 ### Hot Config Update
@@ -80,11 +80,11 @@ xmouse 0x01         # Faster (5ms - may feel jittery)
 If XMouse is already running, launch with a new config byte to update settings instantly:
 
 ```bash
-xmouse 0x13         # Start daemon or update config
-xmouse 0x21         # Update to 20ms (no restart needed!)
-xmouse 0x93         # Enable debug mode
-xmouse 0x13         # Disable debug mode
-xmouse 0x00         # Stop daemon
+XMouseD 0x13         # Start daemon or update config
+XMouseD 0x21         # Update to 20ms (no restart needed!)
+XMouseD 0x93         # Enable debug mode
+XMouseD 0x13         # Disable debug mode
+XMouseD 0x00         # Stop daemon
 ```
 
 ### Command Arguments

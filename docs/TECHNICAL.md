@@ -1,4 +1,4 @@
-# XMouse Technical Documentation
+# XMouseD Technical Documentation
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@
 
 ### Design Philosophy
 
-XMouse follows the principle of **ultra-light daemon** design:
+XMouseD follows the principle of **ultra-light daemon** design:
 - Background process with shell detachment
 - No dynamic allocations during runtime
 - Direct OS calls via VBCC inline pragmas
@@ -168,7 +168,7 @@ BIT 8:     Mouse Button 4
 BIT 7-0:   signed 8-bit wheel counter
 ```
 
-**XMouse implementation is CORRECT** per official SAGA chipset documentation. The button bits are:
+**XMouseD implementation is CORRECT** per official SAGA chipset documentation. The button bits are:
 - **Bit 8**: Button 4 state (1=pressed, 0=released)
 - **Bit 9**: Button 5 state (1=pressed, 0=released)
 
@@ -178,7 +178,7 @@ BIT 7-0:   signed 8-bit wheel counter
 
 ### Event Buffer and Reuse
 
-To minimize allocations during runtime, XMouse maintains a single static event buffer that is initialized once and reused for all event injections:
+To minimize allocations during runtime, XMouseD maintains a single static event buffer that is initialized once and reused for all event injections:
 
 ```c
 static struct InputEvent s_eventBuf;  // Global reusable buffer
@@ -201,7 +201,7 @@ injectEvent(&s_eventBuf);
 
 ### NewMouse Standard
 
-XMouse injects **both** event types for maximum compatibility:
+XMouseD injects **both** event types for maximum compatibility:
 
 1. **IECLASS_NEWMOUSE** - NewMouse standard (modern apps: browsers, scrollable widgets)
 2. **IECLASS_RAWKEY** - RawKey fallback (legacy apps: Miami, MultiView 37+)
