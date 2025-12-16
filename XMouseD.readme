@@ -227,7 +227,7 @@ FILES IN ARCHIVE:
   TECHNICAL.md       - Architecture and developer documentation
   ROADMAP.md         - Future development plans
   CHANGELOG.md       - Version history
-  src/xmouse.c       - Source code
+  src/xmoused.c       - Source code
   include/newmouse.h - NewMouse standard constants
   Makefile           - Build configuration
   setup.ps1          - Setup script for Windows
