@@ -1,13 +1,13 @@
-; XMouse Installer Script
-; $VER: XMouse 1.0 (15.12.2025)
+; ~ XMouseD [PROGRAM_NAME]~ Installer Script
+; $VER: ~ XMouseD [PROGRAM_EXE_NAME]~ ~ 1.0 [PROGRAM_VERSION]~ (~ 2025-12-17 [PROGRAM_DATE]~)
 
 (complete 0)
-(set @app-name "XMouse SAGA Daemon")
+(set @app-name "~ XMouseD [PROGRAM_NAME]~")
 (set @default-dest "C:")
 
 (complete 3)
 ; Welcome message
-(welcome "Welcome to the XMouse installer. This installer will guide you through the required steps to install the daemon drivers.")
+(welcome "Welcome to the ~ XMouseD [PROGRAM_NAME]~ installer. This installer will guide you through the required steps to install the daemon drivers.")
 
 (complete 6)
 ; ========================================
@@ -16,7 +16,7 @@
 
 (set #dest-cmd
   (askdir
-    (prompt "Where do you want to install the xmouse executable?\n(usually your C: command directory)")
+    (prompt "Where do you want to install the ~ XMouseD [PROGRAM_EXE_NAME]~ executable?\n(usually your C: command directory)")
     (help @askdir-help)
     (default "C:")
   )
@@ -28,12 +28,12 @@
 ; ========================================
 
 (copyfiles
-  (prompt "Copying XMouse SAGA Daemon executable...")
+  (prompt "Copying ~ XMouseD [PROGRAM_EXE_NAME]~ executable...")
   (help @copyfiles-help)
   (confirm "expert")
-  (source "XMouseD")
+  (source "~ XMouseD [PROGRAM_EXE_NAME]~")
   (dest #dest-cmd)
-  (choices "XMouseD")
+  (choices "~ XMouseD [PROGRAM_EXE_NAME]~")
   (infos)
 )
 
@@ -44,7 +44,7 @@
 
 (set #dest-help
   (askdir
-    (prompt "Where should the XMouseD.guide documentation be installed?\n(usually Help: or HELP:)")
+    (prompt "Where should the ~ XMouseD [PROGRAM_NAME]~.guide documentation be installed?\n(usually Help: or HELP:)")
     (help @askdir-help)
     (default "HELP:")
   )
@@ -56,12 +56,12 @@
 ; ========================================
 
 (copyfiles
-  (prompt "Copying XMouseD.guide documentation...")
+  (prompt "Copying ~ XMouseD [PROGRAM_NAME]~.guide documentation...")
   (help @copyfiles-help)
   (confirm "expert")
-  (source "XMouseD.guide")
+  (source "~ XMouseD [PROGRAM_NAME]~.guide")
   (dest #dest-help)
-  (choices "XMouseD.guide")
+  (choices "~ XMouseD [PROGRAM_NAME]~.guide")
   (infos)
 )
 
@@ -72,7 +72,7 @@
 
 (set #startup-add
   (askchoice
-    (prompt "Add XMouse SAGA Daemon to your User-Startup script?\n\nThis will make the daemon start automatically every time your Amiga boots, with default configuration (wheel + buttons, 10ms polling).\n\nYou can edit User-Startup later to change the configuration.")
+    (prompt "Add ~ XMouseD [PROGRAM_EXE_NAME]~ to your User-Startup script?\n\nThis will make the daemon start automatically every time your Amiga boots, with default configuration (wheel + buttons, 10ms polling).\n\nYou can edit User-Startup later to change the configuration.")
     (help @askchoice-help)
     (choices
       "Yes - Add to User-Startup"
@@ -119,17 +119,17 @@
 
 (complete 95)
 ; Add to User-Startup using startup command (safe append)
-(startup "XMouseD"
-  (prompt "Adding XMouse SAGA Daemon to User-Startup...")
+(startup "~ XMouseD [PROGRAM_EXE_NAME]~"
+  (prompt "Adding ~ XMouseD [PROGRAM_EXE_NAME]~ to User-Startup...")
   (help @startup-help)
-  (command "C:XMouseD >NIL:\n")
+  (command "C:~ XMouseD [PROGRAM_EXE_NAME]~ >NIL:\n")
 )
 
 )
 ; else show warning
 (
 
-(message "Warning: Could not find " #startup-path "\n\nYou can manually add this line to your User-Startup script:\n\nC:XMouseD >NIL:\n\nThis will make the daemon start at boot time.")
+(message "Warning: Could not find " #startup-path "\n\nYou can manually add this line to your User-Startup script:\n\nC:~ XMouseD [PROGRAM_EXE_NAME]~ >NIL:\n\nThis will make the daemon start at boot time.")
 
 )
 ) ; End if startup-exists
@@ -142,4 +142,4 @@
 ; ========================================
 (complete 100)
 ; youpi ^^
-(exit "Installation Complete!\nXMouse SAGA Daemon has been successfully installed.")
+(exit "Installation Complete!\n~ XMouseD [PROGRAM_NAME]~, eXtended Mouse Driver for Apollo 68080 SAGA Hardware E Daemon has been successfully installed.")
