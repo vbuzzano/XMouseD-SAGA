@@ -11,8 +11,11 @@
     # ========================================================================
     Project = @{
         Name        = "XMouseD"
-        Description = "Daemon Driver for Saga Mouse Wheel and Extra Buttons"
-        Version     = "0.1.0"
+        Version     = "1.0"
+        VersionDate = "2025-12-17"
+        Author      = "Vincent Buzzano"
+        Description = "Extended mouse driver for Apollo 68080 SAGA chipset"
+        DescShort   = "SAGA eXtended Mouse Driver"
     }
 
     # ========================================================================
@@ -27,10 +30,11 @@
     # Custom Environment Variables (added to .env)
     # ========================================================================
     Envs = @{
-        # MY_VAR = "my_value"
-        APOLLO_V4_HOST = "10.0.0.168:Ram Disk"
-        INSTALLPATH = "install"
-        GUIDEPATH = "XMouseD.guide"
+        APOLLO_V4_HOST      = "10.0.0.168:Ram Disk"
+        INSTALL_FILE        = "Install"
+        GUIDE_FILE          = "XMouseD.guide"
+        README_FILE         = "XMouseD.readme"
+        ASSETS_DIR          = ".\assets"
     }
 
     # ========================================================================
@@ -77,8 +81,7 @@
     # Build Settings
     # ========================================================================
     Build = @{
-        # Program name for the executable (defaults to Project.Name)
-        ProgramName = "xmoused"
+        EXE_NAME = "XMouseD"
         
         # Default CPU target (68000, 68020, 68040, 68080)
         DefaultCPU  = "68080"
