@@ -40,24 +40,33 @@ $escapedVersion = $env:PROGRAM_VERSION -replace '[^A-Za-z0-9._-]', '_'
 $ReleaseDir = "$env:DIST_DIR\$env:PROGRAM_NAME-$escapedVersion"
 
 # create release directory
-if ((Test-Path $ReleaseDir)) {
-    Remove-item -Recurse -Force $ReleaseDir -ErrorAction SilentlyContinue
+if ((Test-Path $env:DIST_DIR)) {
+    Remove-item -Recurse -Force $env:DIST_DIR -ErrorAction SilentlyContinue
 }
 New-Item -ItemType Directory -Path $ReleaseDir | Out-Null
 
-# update env in sources
+# SOURCE
 . $EnvReplace  -Recurse -Force -Path ".\src"
 
-# build release
+# PROGRAM
 make clean
 make MODE=release rebuild
 Move-Item -Force "$env:DIST_DIR\$env:PROGRAM_EXE_NAME" "$ReleaseDir"
 
-# update env in guide
+# GUIDE
 . $EnvReplace  -Force -OutputDir ".\dist" -Path "XMouseD.guide"
 Move-Item -Force "$env:DIST_DIR\XMouseD.guide" "$ReleaseDir\$env:PROGRAM_NAME.guide"
+Copy-Item -Force "$env:ASSETS_DIR\Guide.info" "$ReleaseDir\$env:PROGRAM_NAME.guide.info"
 
+# README
 . $EnvReplace -Force -OutputDir ".\dist" -Path "XMouseD.readme"
-Copy-Item -Force "$env:DIST_DIR\XMouseD.readme" "$ReleaseDir\readme"
 Move-Item -Force "$env:DIST_DIR\XMouseD.readme" "$env:DIST_DIR\$env:PROGRAM_NAME-$escapedVersion.readme"
+Copy-Item -Force "$env:ASSETS_DIR\Ascii.info" "$env:DIST_DIR\$env:PROGRAM_NAME-$escapedVersion.readme.info"
 
+# INSTALL
+. $EnvReplace -Force -OutputDir ".\dist" -Path "Install"
+Move-Item -Force "$env:DIST_DIR\Install" "$ReleaseDir\Install $env:PROGRAM_NAME"
+Copy-Item -Force "$env:ASSETS_DIR\Install.info" "$ReleaseDir\Install $env:PROGRAM_NAME.info"
+
+# Folder
+Copy-Item -Force "$env:ASSETS_DIR\Drawer.info" "$env:DIST_DIR\$env:PROGRAM_NAME-$escapedVersion.info"
