@@ -8,174 +8,12 @@
 
 ## Table des Matières
 
-1. [Issues Majeures](#issues-majeures)
 2. [Issues Mineures](#issues-mineures)
 3. [Risques Potentiels](#risques-potentiels)
 4. [Code Smell & Debt Technique](#code-smell--debt-technique)
 
----
-## Issues Majeures
----
-
-### M4. `PrintF()` appelé en mode RELEASE sans protection
-
-**Localisation:** `parseArguments()` ligne 424-432
-
-**Problème:**
-En mode RELEASE, `PrintF()` est appelé sans vérifier si console disponible (peut crasher si lancé depuis Workbench).
-
-**Code problématique:**
-```c
-### M4. `PrintF()` appelé en mode RELEASE sans protection
-
-**Localisation:** `parseArguments()` ligne ~545
-
-**Problème:**
-En mode RELEASE, `PrintF()` est appelé sans vérifier si console disponible (peut crasher si lancé depuis Workbench).
-
-**Code actuel:**
-```c
-#ifndef RELEASE
-    PrintF("config: 0x%02lx", (ULONG)configByte);
-    PrintF("wheel: %s", (configByte & CONFIG_WHEEL_ENABLED) ? "ON" : "OFF");
-    PrintF("extra buttons: %s", (configByte & CONFIG_BUTTONS_ENABLED) ? "ON" : "OFF");
-#endif
-if (configByte & CONFIG_DEBUG_MODE)  // ← CONFIG_DEBUG_MODE actif en RELEASE!
-{
-    PrintF("mode: %s", getModeName(configByte));  // ← Pas protégé!
-}
-```
-
-**Explication du problème:**
-
-1. **CONFIG_DEBUG_MODE (bit 7)** est un flag utilisateur (dans le byte de config 0xNN)
-2. **RELEASE** est un flag de compilation (`make MODE=release`)
-3. Ce sont deux choses **complètement différentes**!
-
-**Scénario crash:**
-- User compile en `MODE=release` → pas de console debug prévue
-- User lance depuis **Workbench** (double-clic icône) → `Output()` = NULL
-- User passe config `0x93` (bit7=1, debug mode activé)
-- Code appelle `PrintF("mode: %s", ...)` → **CRASH** car pas de console
-
-**Impact:**
-- 🔴 **Crash potentiel** si lancé depuis Workbench avec CONFIG_DEBUG_MODE
-- 🟡 **Inconsistency** - 3 premiers PrintF protégés par `#ifndef RELEASE`, le 4ème non
-- 🟡 **Confusion** - CONFIG_DEBUG_MODE devrait être inutile en RELEASE
-
-**Solution 1 (conservative):** Protéger le PrintF restant
-```c
-#ifndef RELEASE
-if (configByte & CONFIG_DEBUG_MODE)
-{
-    PrintF("mode: %s", getModeName(configByte));
-}
-#endif
-```
-
-**Solution 2 (robuste):** Vérifier `Output()` avant tout PrintF en RELEASE
-```c
-if (configByte & CONFIG_DEBUG_MODE)
-{
-    BPTR out = Output();
-    if (out)  // ← Console existe?
-    {
-        PrintF("mode: %s", getModeName(configByte));
-    }
-}
-```
-
-**Recommandation:** Solution 1 (plus simple, cohérent avec les 3 autres PrintF)
-
-**Priorité:** 🟠 MAJEURE - Peut crasher en production
-**Problème:**
-Les pointeurs statiques (`s_PublicPort`, `s_InputPort`, etc.) ne sont pas mis à `NULL` après cleanup.
-
-**Impact:**
-- **Risque double-free** si `daemon_Cleanup()` appelé deux fois
-- **Dangling pointers** si daemon relancé dans même processus (théoriquement impossible)
-
-**Solution:**
-```c
-if (s_PublicPort)
-{
-    RemPort(s_PublicPort);
-    DeleteMsgPort(s_PublicPort);
-    s_PublicPort = NULL;  // ← Ajouter
-}
-```
-
 **Priorité:** 🟡 MINEURE - Edge case improbable
 
----
-
-### m2. Logs debug commentés dans `daemon_processWheel()` et `daemon_processButtons()`
-
-**Localisation:** Lignes 728-731, 773-774
-
-**Problème:**
-Code debug commenté pollue le source. Devrait être supprimé ou activable via flag.
-
-**Exemple:**
-```c
-#ifndef RELEASE
-    // Log wheel event
-    //DebugLogF("Wheel: delta=%ld dir=%s count=%ld", ...);  // ← Commenté
-#endif
-```
-
-**Impact:**
-- **Code smell** - confusion entre code actif et mort
-- **Maintenance** - oubli de nettoyer
-
-**Solution:**
-Soit supprimer, soit créer flag `CONFIG_VERBOSE_DEBUG`:
-```c
-#ifndef RELEASE
-    if (s_configByte & CONFIG_VERBOSE_DEBUG) {
-        DebugLogF("Wheel: delta=%ld dir=%s count=%ld", ...);
-    }
-#endif
-```
-
-**Priorité:** 🟡 MINEURE - Qualité code
-
----
-
-### m3. Duplication code gestion debug console
-
-**Localisation:** `daemon()` lignes 548-565 et 631-646
-
-**Problème:**
-Logique open/close debug console dupliquée dans deux endroits (init et XMSG_CMD_SET_CONFIG).
-
-**Solution:**
-Extraire en fonctions:
-```c
-static inline void openDebugConsole(void)
-{
-#ifndef RELEASE
-    if (!s_debugCon) {
-        s_debugCon = Open("CON:0/0/640/200/XMouseD Debug/AUTO/CLOSE/WAIT", MODE_NEWFILE);
-        DebugLog("Debug mode enabled");
-    }
-#endif
-}
-
-static inline void closeDebugConsole(void)
-{
-#ifndef RELEASE
-    if (s_debugCon) {
-        Close(s_debugCon);
-        s_debugCon = 0;
-    }
-#endif
-}
-```
-
-**Priorité:** 🟡 MINEURE - DRY principle
-
----
 
 ### m4. `InputBase` déclaré deux fois
 
@@ -377,13 +215,7 @@ Soit faire le travail, soit créer issue GitHub, soit supprimer si non-prioritai
 
 ## Todo List - Plan de Correction
 
-### 🟠 Majeures (Avant Release)
-- [ ] **M4** Protéger `PrintF()` RELEASE → crash prevention
-
 ### 🟡 Mineures (Avant 1.0 Final)
-- [ ] **m1** Nullifier pointeurs dans `daemon_Cleanup()`
-- [ ] **m2** Nettoyer logs debug commentés
-- [ ] **m3** Extraire `openDebugConsole()/closeDebugConsole()`
 - [ ] **m4** Supprimer `InputBase` dupliquée
 
 ### 🔵 Post-Release (Optimisations)

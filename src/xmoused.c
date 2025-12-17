@@ -251,9 +251,22 @@ static inline ULONG getAdaptiveInterval(BOOL hadActivity);
             Flush(s_debugCon); \
             SelectOutput(_old); \
         }
+
+    // Display startup config info
+    static void DebugConfigInfo(UBYTE configByte)
+    {
+        PrintF("config: 0x%02lx", (ULONG)configByte);
+        PrintF("wheel: %s", (configByte & CONFIG_WHEEL_ENABLED) ? "ON" : "OFF");
+        PrintF("extra buttons: %s", (configByte & CONFIG_BUTTONS_ENABLED) ? "ON" : "OFF");
+        if (configByte & CONFIG_DEBUG_MODE)
+        {
+            PrintF("mode: %s", getModeName(configByte));
+        }
+    }
 #else
     #define DebugLog(fmt)         {} // No-op
-    #define DebugLogF(fmt, ...)   {} // No-op  
+    #define DebugLogF(fmt, ...)   {} // No-op
+    #define DebugConfigInfo(configByte) {} // No-op
 #endif
 
 
@@ -534,17 +547,7 @@ static inline BYTE parseArguments(void)
             s_configByte = configByte;
             
             // Display config info
-#ifndef RELEASE
-            {
-                PrintF("config: 0x%02lx", (ULONG)configByte);
-                PrintF("wheel: %s", (configByte & CONFIG_WHEEL_ENABLED) ? "ON" : "OFF");
-                PrintF("extra buttons: %s", (configByte & CONFIG_BUTTONS_ENABLED) ? "ON" : "OFF");
-                if (configByte & CONFIG_DEBUG_MODE)
-                {
-                    PrintF("mode: %s", getModeName(configByte));
-                }
-            }
-#endif
+            DebugConfigInfo(configByte);
 
             return START_MODE_START;
         }
