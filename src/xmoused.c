@@ -123,8 +123,12 @@ static struct MsgPort *s_InputPort;    // Input device port
 static struct IOStdReq *s_InputReq;    // Input IO request
 static struct MsgPort *s_TimerPort;    // Timer port
 static struct timerequest *s_TimerReq; // Timer IO request
-static BYTE s_lastWHCounter;             // Last wheel position
+
+static BYTE s_lastWHCounter;           // Last wheel position
+static int s_lastWHDelta;              // Last wheel delta
+//static BYTE s_lastWHDir;               // Last wheel direction
 static UWORD s_lastBTState;            // Last button state
+
 static ULONG s_pollInterval;           // Timer interval (microseconds)
 static UBYTE s_configByte;             // Configuration byte
 static struct InputEvent s_eventBuf;   // Reusable event buffer
@@ -209,8 +213,8 @@ static inline const char* getModeName(UBYTE configByte);
 
 static void daemon(void);
 static inline void daemon_TimerStart(ULONG micros);
-static inline void daemon_ProcessWheel(BYTE current);
-static inline void daemon_ProcessButtons(UWORD current);
+static inline void daemon_ProcessWheel(int delta);
+static inline void daemon_ProcessButtons(UWORD state);
 static inline ULONG daemon_GetAdaptiveInterval(BOOL hadActivity);
 static BOOL daemon_Init(void);
 static void daemon_Cleanup(void);
@@ -626,7 +630,7 @@ static void daemon(void)
                                 UBYTE newInterval = (newConfig & CONFIG_INTERVAL_MASK) >> CONFIG_INTERVAL_SHIFT;
                                 
                                 s_configByte = newConfig;
-                                msg->result = s_configByte;
+                                msg->result = 0;  // Success
                                 
                                 // If mode changed, reinitialize adaptive system
                                 if (oldInterval != newInterval || 
@@ -704,12 +708,54 @@ static void daemon(void)
             // Timer signal: poll & inject events
             if (signals & timerSig)
             {
+                BOOL hadActivity, hadWHActivity, hadBTActivity;
+                UWORD currentBTState;
+                //BYTE currentWHDir;
+                BYTE currentWHCounter;
+                int currentWHDelta;
 
-                BYTE currentCounter = SAGA_WHEELCOUNTER;
-                UWORD currentButtons = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
-                BOOL buttonPressed = (currentButtons != 0);  // At least one button held
-                BOOL hadActivity = (currentCounter != s_lastWHCounter) || (currentButtons != s_lastBTState) || buttonPressed;
-                
+                // Prepare wheel delta if WH enabled
+                if (s_configByte & CONFIG_WHEEL_ENABLED)
+                {
+                    currentWHCounter = SAGA_WHEELCOUNTER;
+
+                    if (s_lastWHCounter != currentWHCounter)
+                    {
+                        // Calculate delta with wrap-around handling
+                        currentWHDelta = (int)(unsigned char)currentWHCounter - (int)(unsigned char)s_lastWHCounter;
+                        if (currentWHDelta != 0)
+                        {
+                            if (currentWHDelta > 127)
+                            {
+                                currentWHDelta -= 256;
+                            }
+                            else if (currentWHDelta < -128) 
+                            { 
+                                currentWHDelta += 256;
+                            }
+                        }
+                        hadWHActivity = TRUE;
+                    }
+                    else
+                    {
+                        hadWHActivity = s_lastWHDelta != 0;
+                        currentWHDelta = 0;
+                    }
+
+                    // currentWHDir = (currentWHDelta == 0 ? 0 : (currentWHDelta > 0) ? 1 : -1);
+                }
+
+                // get currentButtons
+                if (s_configByte & CONFIG_BUTTONS_ENABLED) {
+                    currentBTState = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
+                    
+                    // button has activity when state change or any button is pressed
+                    hadBTActivity = (currentBTState != s_lastBTState) || (currentBTState != 0);
+                }
+
+                // determine if ther is an activity
+                hadActivity = hadWHActivity || hadBTActivity;
+
                 if (hadActivity) 
                 {
                     // Initialize event buffer (reused by both wheel and button processing)
@@ -722,15 +768,15 @@ static void daemon(void)
                     s_eventBuf.ie_TimeStamp.tv_micro = 0;
                 
                     // Check for wheel activity
-                    if ((s_configByte & CONFIG_WHEEL_ENABLED) && currentCounter != s_lastWHCounter)
+                    if (hadWHActivity)
                     {
-                        daemon_ProcessWheel(currentCounter);
+                        daemon_ProcessWheel(currentWHDelta);
                     }
 
                     // Check for button activity
-                    if ((s_configByte & CONFIG_BUTTONS_ENABLED) && currentButtons != s_lastBTState)
+                    if (hadBTActivity)
                     {
-                        daemon_ProcessButtons(currentButtons);
+                        daemon_ProcessButtons(currentBTState);
                     }
                 }
 
@@ -760,6 +806,12 @@ static void daemon(void)
                     //}
                 }
 #endif
+
+                // Update last values
+                s_lastWHCounter = currentWHCounter;
+                s_lastWHDelta   = currentWHDelta;
+                //s_lastWHDir     = currentWHDir;
+                s_lastBTState   = currentBTState;
             }
         }
     }
@@ -799,80 +851,58 @@ static inline void injectEvent(struct InputEvent *ev)
 /**
  * Process wheel movement and inject events if needed.
  * Reuses s_eventBuf (only ie_Code and ie_Class are modified).
- * @param current Current wheel counter value (already read from SAGA_WHEELCOUNTER)
+ * @param delta Current wheel delta
  */
-static inline void daemon_ProcessWheel(BYTE current)
+static inline void daemon_ProcessWheel(int delta)
 {
-    int delta, count, i;
-    UWORD code;
-    
-    // Use provided current value (already read in main loop)
-    if (current != s_lastWHCounter)
-    {
-        // Calculate delta with wrap-around handling
-        delta = (int)(unsigned char)current - (int)(unsigned char)s_lastWHCounter;
-        if (delta > 127)
-        {
-            delta -= 256;
-        }
-        else if (delta < -128) 
-        { 
-            delta += 256;
-        }
-    
-        // Update last counter
-        s_lastWHCounter = current;
+    if (delta == 0) return;
         
-        if (delta != 0)
-        {
-            // Determine direction and repeat count
-            code = (delta > 0) ? NM_WHEEL_UP : NM_WHEEL_DOWN;
-            count = (delta > 0) ? delta : -delta;  // abs(delta)
-
-            // Log wheel event
-            //DebugLogF("Wheel: delta=%ld dir=%s count=%ld", 
-            //         (LONG)delta, 
-            //         (code == NM_WHEEL_UP) ? "UP" : "DOWN", 
-            //         (LONG)count);
-            
-            // Reuse s_eventBuf (only ie_Code and ie_Class change)
-            s_eventBuf.ie_Code = code;
-            
-            // Repeat events based on delta
-            for (i = 0; i < count; i++)
-            {
-                // Inject both RAWKEY - Modern apps
-                s_eventBuf.ie_Class = IECLASS_RAWKEY;
-                injectEvent(&s_eventBuf);
-                
-                // and NEWMOUSE - Legacy apps
-                s_eventBuf.ie_Class = IECLASS_NEWMOUSE;
-                injectEvent(&s_eventBuf);
-            }
-        }
+    // Determine direction and repeat count
+    UWORD code = (delta > 0) ? NM_WHEEL_UP : NM_WHEEL_DOWN;
+    int count = ((delta > 0) ? delta : -delta);
+    
+    // Reuse s_eventBuf (only ie_Code and ie_Class change)
+    s_eventBuf.ie_Code = code;
+    
+    // Repeat events based on delta
+    for (int i = 0; i < count; i++)
+    {
+        // Inject both RAWKEY - Modern apps
+        s_eventBuf.ie_Class = IECLASS_RAWKEY;
+        injectEvent(&s_eventBuf);
+        
+        // and NEWMOUSE - Legacy apps
+        s_eventBuf.ie_Class = IECLASS_NEWMOUSE;
+        injectEvent(&s_eventBuf);
     }
+
+    // Log wheel event
+    //DebugLogF("Wheel: delta=%ld dir=%s count=%ld", 
+    //         (LONG)delta, 
+    //         (code == NM_WHEEL_UP) ? "UP" : "DOWN", 
+    //         (LONG)count);
 }
 
 /**
  * Process buttons and inject events if needed.
  * Reuses s_eventBuf (only ie_Code and ie_Class are modified).
- * @param current Current button state (already read and masked from SAGA_MOUSE_BUTTONS)
+ * @param state Current button state (already read and masked from SAGA_MOUSE_BUTTONS)
  */
-static inline void daemon_ProcessButtons(UWORD current)
+static inline void daemon_ProcessButtons(UWORD state)
 {
     UWORD changed;
     UWORD code;
     
     // Use provided current value (already read and masked in main loop)
-    changed = current ^ s_lastBTState;
+    changed = state ^ s_lastBTState;
     
     if (changed)
     {
         if (changed & SAGA_BUTTON4_MASK)
         {
-            code = NM_BUTTON_FOURTH | ((current & SAGA_BUTTON4_MASK) ? 0 : IECODE_UP_PREFIX);
+            code = NM_BUTTON_FOURTH | ((state & SAGA_BUTTON4_MASK) ? 0 : IECODE_UP_PREFIX);
         
-            //DebugLogF("Button 4 %s", (current & SAGA_BUTTON4_MASK) ? "pressed" : "released");
+            //DebugLogF("Button 4 %s", (state & SAGA_BUTTON4_MASK) ? "pressed" : "released");
 
             s_eventBuf.ie_Code = code;
             
@@ -885,9 +915,9 @@ static inline void daemon_ProcessButtons(UWORD current)
         
         if (changed & SAGA_BUTTON5_MASK)
         {
-            code = NM_BUTTON_FIFTH | ((current & SAGA_BUTTON5_MASK) ? 0 : IECODE_UP_PREFIX);
+            code = NM_BUTTON_FIFTH | ((state & SAGA_BUTTON5_MASK) ? 0 : IECODE_UP_PREFIX);
 
-            //DebugLogF("Button 5 %s", (current & SAGA_BUTTON5_MASK) ? "pressed" : "released");
+            //DebugLogF("Button 5 %s", (state & SAGA_BUTTON5_MASK) ? "pressed" : "released");
 
             s_eventBuf.ie_Code = code;
             
@@ -897,8 +927,6 @@ static inline void daemon_ProcessButtons(UWORD current)
             s_eventBuf.ie_Class = IECLASS_NEWMOUSE;
             injectEvent(&s_eventBuf);
         }
-        
-        s_lastBTState = current;
     }
 }
 
@@ -1131,8 +1159,10 @@ static inline BOOL daemon_Init(void)
     }
 
     // Initialize hardware state to avoid false initial events
-    s_lastWHCounter = SAGA_WHEELCOUNTER;
     s_lastBTState = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
+    s_lastWHCounter = SAGA_WHEELCOUNTER;
+    s_lastWHDelta = 0;
+    //s_lastWHDir = 0;
     
     // Ensure config byte and poll interval are set
     if (s_configByte == 0)
