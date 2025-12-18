@@ -11,7 +11,7 @@ Est ce que cela est bien géré meme à une intervalle lente ?
 si le boutton est préssé, on va considéré les prochains tic comme inactive, alors que s'il est press le boutton, il faut que ce soit réactif quand il lache. et actuellement meme sans tester je peux affirmer que le state TO_IDLE va s'enclencher.
 
 
-## Idée
+## Idée v 1.1 Started in branch test_dynamic_scroll
 Utilisé bit restant pour  deux possibilités
 
 ### Dynamic Wheel bit 2 ou bit 3 (celui qui nous laisse le plus de possibilité)

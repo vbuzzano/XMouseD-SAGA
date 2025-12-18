@@ -123,8 +123,8 @@ static struct MsgPort *s_InputPort;    // Input device port
 static struct IOStdReq *s_InputReq;    // Input IO request
 static struct MsgPort *s_TimerPort;    // Timer port
 static struct timerequest *s_TimerReq; // Timer IO request
-static BYTE s_lastCounter;             // Last wheel position
-static UWORD s_lastButtons;            // Last button state
+static BYTE s_lastWHCounter;             // Last wheel position
+static UWORD s_lastBTState;            // Last button state
 static ULONG s_pollInterval;           // Timer interval (microseconds)
 static UBYTE s_configByte;             // Configuration byte
 static struct InputEvent s_eventBuf;   // Reusable event buffer
@@ -708,7 +708,7 @@ static void daemon(void)
                 BYTE currentCounter = SAGA_WHEELCOUNTER;
                 UWORD currentButtons = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
                 BOOL buttonPressed = (currentButtons != 0);  // At least one button held
-                BOOL hadActivity = (currentCounter != s_lastCounter) || (currentButtons != s_lastButtons) || buttonPressed;
+                BOOL hadActivity = (currentCounter != s_lastWHCounter) || (currentButtons != s_lastBTState) || buttonPressed;
                 
                 if (hadActivity) 
                 {
@@ -722,13 +722,13 @@ static void daemon(void)
                     s_eventBuf.ie_TimeStamp.tv_micro = 0;
                 
                     // Check for wheel activity
-                    if ((s_configByte & CONFIG_WHEEL_ENABLED) && currentCounter != s_lastCounter)
+                    if ((s_configByte & CONFIG_WHEEL_ENABLED) && currentCounter != s_lastWHCounter)
                     {
                         daemon_ProcessWheel(currentCounter);
                     }
 
                     // Check for button activity
-                    if ((s_configByte & CONFIG_BUTTONS_ENABLED) && currentButtons != s_lastButtons)
+                    if ((s_configByte & CONFIG_BUTTONS_ENABLED) && currentButtons != s_lastBTState)
                     {
                         daemon_ProcessButtons(currentButtons);
                     }
@@ -807,10 +807,10 @@ static inline void daemon_ProcessWheel(BYTE current)
     UWORD code;
     
     // Use provided current value (already read in main loop)
-    if (current != s_lastCounter)
+    if (current != s_lastWHCounter)
     {
         // Calculate delta with wrap-around handling
-        delta = (int)(unsigned char)current - (int)(unsigned char)s_lastCounter;
+        delta = (int)(unsigned char)current - (int)(unsigned char)s_lastWHCounter;
         if (delta > 127)
         {
             delta -= 256;
@@ -821,7 +821,7 @@ static inline void daemon_ProcessWheel(BYTE current)
         }
     
         // Update last counter
-        s_lastCounter = current;
+        s_lastWHCounter = current;
         
         if (delta != 0)
         {
@@ -864,7 +864,7 @@ static inline void daemon_ProcessButtons(UWORD current)
     UWORD code;
     
     // Use provided current value (already read and masked in main loop)
-    changed = current ^ s_lastButtons;
+    changed = current ^ s_lastBTState;
     
     if (changed)
     {
@@ -898,7 +898,7 @@ static inline void daemon_ProcessButtons(UWORD current)
             injectEvent(&s_eventBuf);
         }
         
-        s_lastButtons = current;
+        s_lastBTState = current;
     }
 }
 
@@ -1131,8 +1131,8 @@ static inline BOOL daemon_Init(void)
     }
 
     // Initialize hardware state to avoid false initial events
-    s_lastCounter = SAGA_WHEELCOUNTER;
-    s_lastButtons = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
+    s_lastWHCounter = SAGA_WHEELCOUNTER;
+    s_lastBTState = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
     
     // Ensure config byte and poll interval are set
     if (s_configByte == 0)
