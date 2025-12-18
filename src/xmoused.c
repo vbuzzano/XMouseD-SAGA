@@ -83,6 +83,9 @@ PROGRAM_DESC_SHORT" (c) "PROGRAM_AUTHOR
 #define XMSG_CMD_SET_CONFIG     1   // Set config byte
 #define XMSG_CMD_GET_STATUS     2   // Get current status
 
+// Daemon communication timeout
+#define DAEMON_REPLY_TIMEOUT    2   // Seconds to wait for daemon reply
+
 
 //===========================================================================
 // Daemon Configuration Definitions
@@ -206,8 +209,8 @@ static inline const char* getModeName(UBYTE configByte);
 
 static void daemon(void);
 static inline void daemon_TimerStart(ULONG micros);
-static inline void daemon_ProcessWheel(void);
-static inline void daemon_ProcessButtons(void);
+static inline void daemon_ProcessWheel(BYTE current);
+static inline void daemon_ProcessButtons(UWORD current);
 static inline ULONG daemon_GetAdaptiveInterval(BOOL hadActivity);
 static BOOL daemon_Init(void);
 static void daemon_Cleanup(void);
@@ -424,7 +427,7 @@ static BOOL sendDaemonMessage(struct MsgPort *port, UBYTE cmd, ULONG value)
     
     // Setup timeout: 2 seconds
     timerReq->tr_node.io_Command = TR_ADDREQUEST;
-    timerReq->tr_time.tv_secs = 2;
+    timerReq->tr_time.tv_secs = DAEMON_REPLY_TIMEOUT;
     timerReq->tr_time.tv_micro = 0;
     SendIO((struct IORequest *)timerReq);
     
@@ -701,36 +704,32 @@ static void daemon(void)
             // Timer signal: poll & inject events
             if (signals & timerSig)
             {
-                BOOL hadActivity = FALSE;
-                
-                // Initialize event buffer (reused by both wheel and button processing)
-                s_eventBuf.ie_NextEvent = NULL;
-                s_eventBuf.ie_SubClass = 0;
-                s_eventBuf.ie_Qualifier = PeekQualifier();  // Capture current qualifier state
-                s_eventBuf.ie_X = 0;
-                s_eventBuf.ie_Y = 0;
-                s_eventBuf.ie_TimeStamp.tv_secs = 0;
-                s_eventBuf.ie_TimeStamp.tv_micro = 0;
-                
-                // Check for wheel activity
-                if (s_configByte & CONFIG_WHEEL_ENABLED)
-                {
-                    BYTE current = SAGA_WHEELCOUNTER;
-                    if (current != s_lastCounter)
-                    {
-                        hadActivity = TRUE;
-                        daemon_ProcessWheel();
-                    }
-                }
 
-                // Check for button activity
-                if (s_configByte & CONFIG_BUTTONS_ENABLED)
+                BYTE currentCounter = SAGA_WHEELCOUNTER;
+                UWORD currentButtons = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
+                BOOL hadActivity = (currentCounter != s_lastCounter) || (currentButtons != s_lastButtons);
+                
+                if (hadActivity) 
                 {
-                    UWORD current = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
-                    if (current != s_lastButtons)
+                    // Initialize event buffer (reused by both wheel and button processing)
+                    s_eventBuf.ie_NextEvent = NULL;
+                    s_eventBuf.ie_SubClass = 0;
+                    s_eventBuf.ie_Qualifier = PeekQualifier();  // Capture current qualifier state
+                    s_eventBuf.ie_X = 0;
+                    s_eventBuf.ie_Y = 0;
+                    s_eventBuf.ie_TimeStamp.tv_secs = 0;
+                    s_eventBuf.ie_TimeStamp.tv_micro = 0;
+                
+                    // Check for wheel activity
+                    if ((s_configByte & CONFIG_WHEEL_ENABLED) && currentCounter != s_lastCounter)
                     {
-                        hadActivity = TRUE;
-                        daemon_ProcessButtons();
+                        daemon_ProcessWheel(currentCounter);
+                    }
+
+                    // Check for button activity
+                    if ((s_configByte & CONFIG_BUTTONS_ENABLED) && currentButtons != s_lastButtons)
+                    {
+                        daemon_ProcessButtons(currentButtons);
                     }
                 }
 
@@ -799,15 +798,14 @@ static inline void injectEvent(struct InputEvent *ev)
 /**
  * Process wheel movement and inject events if needed.
  * Reuses s_eventBuf (only ie_Code and ie_Class are modified).
+ * @param current Current wheel counter value (already read from SAGA_WHEELCOUNTER)
  */
-static inline void daemon_ProcessWheel(void)
+static inline void daemon_ProcessWheel(BYTE current)
 {
-    BYTE current;
     int delta, count, i;
     UWORD code;
     
-    // Read current wheel counter
-    current = SAGA_WHEELCOUNTER;
+    // Use provided current value (already read in main loop)
     if (current != s_lastCounter)
     {
         // Calculate delta with wrap-around handling
@@ -857,13 +855,14 @@ static inline void daemon_ProcessWheel(void)
 /**
  * Process buttons and inject events if needed.
  * Reuses s_eventBuf (only ie_Code and ie_Class are modified).
+ * @param current Current button state (already read and masked from SAGA_MOUSE_BUTTONS)
  */
-static inline void daemon_ProcessButtons(void)
+static inline void daemon_ProcessButtons(UWORD current)
 {
-    UWORD current, changed;
+    UWORD changed;
     UWORD code;
     
-    current = SAGA_MOUSE_BUTTONS & (SAGA_BUTTON4_MASK | SAGA_BUTTON5_MASK);
+    // Use provided current value (already read and masked in main loop)
     changed = current ^ s_lastButtons;
     
     if (changed)
