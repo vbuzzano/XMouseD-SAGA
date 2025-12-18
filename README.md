@@ -59,16 +59,16 @@ Requires USB mouse with scroll wheel (and extra buttons 4 & 5) connected to the 
 4. Follow the on-screen prompts
 5. Reboot when installation completes
 
-The Installer will copy `[]($PROGRAM_EXE_NAME)XMouseD[]()` to `C:` and add it to your `S:User-Startup` automatically.
+The Installer will copy `XMouseD` to `C:` and add it to your `S:User-Startup` automatically.
 
 ### Method 2: Manual Installation
 
-1. Copy `[]($PROGRAM_EXE_NAME)XMouseD[]()` to `C:` (or `SYS:C/`)
+1. Copy `XMouseD` to `C:` (or `SYS:C/`)
 2. Add to `S:User-Startup`:
    ```
-   C:[]($PROGRAM_EXE_NAME)XMouseD[]() >NIL:
+   C:XMouseD >NIL:
    ```
-4. Restart or run `[]($PROGRAM_EXE_NAME)XMouseD[]()` manually
+4. Restart or run `XMouseD` manually
 
 
 ## Usage & Configuration
@@ -104,29 +104,29 @@ Start, stop, or toggle []($PROGRAM_EXE_NAME)XMouseD[]() with these commands:
 Adaptive Modes (recommended):
 
 ```bash
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x13         ; BALANCED (default, responsive for everyday use)
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x03         ; COMFORT (occasional use, reactive when needed)
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x23         ; REACTIVE (instant response, fast reactivity)
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x33         ; ECO (minimal CPU, slower reactivity)
+XMouseD 0x13         ; BALANCED (default, responsive for everyday use)
+XMouseD 0x03         ; COMFORT (occasional use, reactive when needed)
+XMouseD 0x23         ; REACTIVE (instant response, fast reactivity)
+XMouseD 0x33         ; ECO (minimal CPU, slower reactivity)
 ```
 
 Normal Modes (constant reactivity):
 
 ```bash
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x53         ; ACTIVE (medium reactivity)
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x43         ; MODERATE (low reactivity)
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x63         ; INTENSIVE (high reactivity)
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x73         ; PASSIVE (very low reactivity)
+XMouseD 0x53         ; ACTIVE (medium reactivity)
+XMouseD 0x43         ; MODERATE (low reactivity)
+XMouseD 0x63         ; INTENSIVE (high reactivity)
+XMouseD 0x73         ; PASSIVE (very low reactivity)
 ```
 
 ### Hot Config Update
 
-If []($PROGRAM_EXE_NAME)XMouseD[]() []($PROGRAM_EXE_NAME)XMouseD[]() is already running, launch with a new config byte to update settings instantly:
+If XMouseD is already running, launch with a new config byte to update settings instantly:
 
 ```bash
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x13         ; Start daemon or update config
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x23         ; Switch to REACTIVE mode (no restart needed!)
-[]($PROGRAM_EXE_NAME)XMouseD[]() 0x00         ; Stop daemon
+XMouseD 0x13         ; Start daemon or update config
+XMouseD 0x23         ; Switch to REACTIVE mode (no restart needed!)
+XMouseD 0x00         ; Stop daemon
 ```
 
 ### Command Arguments

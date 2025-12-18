@@ -12,7 +12,7 @@
     Project = @{
         Name        = "XMouseD"
         Version     = "1.0"
-        VersionDate = "2025-12-17"
+        VersionDate = "2025-12-18"
         Author      = "Vincent Buzzano"
         Description = "Extended mouse driver for Apollo 68080 SAGA chipset"
         DescShort   = "SAGA eXtended Mouse Driver"
