@@ -93,17 +93,10 @@ release:
 	@echo ------------------------------------------------------------------
 	@echo Build Release: ${PROGRAM_NAME} Version: $(PROGRAM_VERSION)
 	@echo ------------------------- -----------------------------------------
-	@scripts/build-release.ps1
-#	@$(MAKE) MODE=release rebuild
-#	@copy $(EXECMD_FILE) "$(DIST_DIR)\$(PROGRAM_EXE_NAME)-$(PROGRAM_VERSION)\$(PROGRAM_EXE_NAME)"
-#	@del  $(EXECMD_FILE)
-#	@copy $(INSTALL_FILE) "$(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)\Install $(PROGRAM_NAME)"
-#	@copy $(GUIDE_FILE) "$(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)\$(PROGRAM_NAME).guide"
-#	@copy $(README_FILE) "$(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)\README.txt"
-#	@copy $(README_FILE) "$(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION).readme"
-#	@copy ".\assets\AmigaGuide.info" "$(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)\$(PROGRAM_NAME).guide.info"
-#	@copy ".\assets\Install.info" "$(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)\Install $(PROGRAM_NAME).info"
-#	@echo Release build completed: $(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)
+	@.\scripts\build-release.ps1
+	@echo ------------------------- -----------------------------------------
+	@echo Release build completed: $(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)
+
 # --- Housekeeping ---
 clean:
 	@if exist "$(ASM_DIR)\*" del /f /q "$(ASM_DIR)\*"

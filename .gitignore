@@ -75,6 +75,8 @@ $RECYCLE.BIN/
 *.log
 
 *_
+_*
+_*_
 *copy.*
 
 # VBCC temporaires

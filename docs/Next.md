@@ -11,6 +11,10 @@
 - [x] Full documentation (README, .guide, .readme)
 - [x] Installer script
 - [x] CHANGELOG.md
+- [x] Code analysis report (PROJECT_ANALYSIS.md)
+- [x] CONFIG_STOP renamed to CONFIG_FEATURES_MASK (clarity)
+- [x] VISION.md completed (Single-File Architecture + Design Principles)
+- [x] Executable size: 5.96KB (<6KB target achieved)
 
 ---
 
@@ -30,8 +34,8 @@
 
 ### Critical - Version Consistency
 - [ ] **Verify all version strings match `1.0`**:
-  - [ ] src/xmoused.c: `PROGRAM_VERSION "1.0"`
-  - [ ] src/xmoused.c: `PROGRAM_DATE "2025-12-17"` (update to release date)
+  - [x] src/xmoused.c: `PROGRAM_VERSION "1.0"`
+  - [x] src/xmoused.c: `PROGRAM_DATE "2025-12-18"` (current date)
   - [ ] CHANGELOG.md: move `[Unreleased]` to `[1.0.0]` with date
   - [ ] All docs using placeholders (will be updated by env-replace)
 
@@ -66,6 +70,26 @@
 ---
 
 ## 🚀 Future Ideas (v1.1+)
+
+### Inactive Mode (CONFIG_FEATURES_MASK = 0)
+When config byte has neither wheel nor buttons enabled (0x00):
+- Instead of stopping daemon completely
+- Keep daemon alive in "inactive" mode
+- Switch to slow timer (≥1 second polling)
+- Monitor for config changes via public port
+- Resume normal operation when features re-enabled
+
+**Benefits**:
+- Instant re-activation (no process restart)
+- Keeps public port alive for external control
+- Minimal CPU usage in inactive state (~0.1%)
+- Smoother integration with future GUI tools
+
+**Implementation**:
+- Add `POLL_STATE_INACTIVE` to adaptive state machine
+- Set timer to 1000000µs (1 second) when `CONFIG_FEATURES_MASK == 0`
+- Skip hardware reads and event injection in inactive state
+- Transition back to normal on `XMSG_CMD_SET_CONFIG` with features enabled
 
 ### Dynamic Wheel Acceleration (Branch: `test_dynamic_scroll`)
 Use bit 2 or bit 3 for dynamic multiplier feature:

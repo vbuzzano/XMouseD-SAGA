@@ -46,3 +46,22 @@ F is a **complementary driver** that adds:
 - No external stub overhead
 - Fully optimizable
 
+## Single-File Architecture
+
+**Alternative**: Multiple modules (daemon.c, hardware.c, inject.c, etc.)  
+**Chosen**: Single file (~1300 lines)
+
+**Benefits**:
+- Faster compilation (<2s)
+- Easier debugging (everything in one place)
+- No module coupling issues
+- Optimal inline opportunities
+
+## Design Principles
+
+1. **Do one thing well** - Read SAGA wheel/buttons, inject events
+2. **Stay invisible** - User never thinks about XMouseD
+3. **Fail gracefully** - No crashes, clean shutdown
+4. **Play nice with others** - Works alongside IControl, FreeWheel, and other commodities
+5.  **Stay lean** - ~6KB code, minimal CPU
+

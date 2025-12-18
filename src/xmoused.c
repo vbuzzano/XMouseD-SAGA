@@ -27,7 +27,7 @@
 // ---> BEGIN GENERATED PROGRAM_CONSTANTS
 #define PROGRAM_NAME "XMouseD"
 #define PROGRAM_VERSION "1.0"
-#define PROGRAM_DATE "2025-12-18"
+#define PROGRAM_DATE "2025-12-17"
 #define PROGRAM_AUTHOR "Vincent Buzzano"
 #define PROGRAM_DESC_SHORT "SAGA eXtended Mouse Driver"
 // <--- END GENERATED PROGRAM CONSTANTS
@@ -122,7 +122,7 @@ PROGRAM_DESC_SHORT" (c) "PROGRAM_AUTHOR
 #define CONFIG_FIXED_MODE       0x40    // Bit 6: Polling mode (0=adaptive, 1=normal/constant) (0b01000000)
 // Bit 7: Reserved (bit 7 use for dev debug mode )
 
-#define CONFIG_STOP (CONFIG_WHEEL_ENABLED | CONFIG_BUTTONS_ENABLED)
+#define CONFIG_FEATURES_MASK (CONFIG_WHEEL_ENABLED | CONFIG_BUTTONS_ENABLED)
 
 #define CONFIG_DEBUG_MODE       0x80    // Bit 7: Debug mode (0b10000000)  
 
@@ -584,7 +584,7 @@ static inline BYTE parseArguments(void)
 #endif
             
             // Check STOP conditions: neither wheel nor buttons enabled (bits 0-1)
-            if ((configByte & CONFIG_STOP) == 0)
+            if ((configByte & CONFIG_FEATURES_MASK) == 0)
             {
                 //PrintF("config 0x%02lx = STOP (wheel and buttons disabled)", (ULONG)configByte);
                 return START_MODE_STOP;
@@ -685,6 +685,8 @@ static void daemon(void)
                                 s_configByte = newConfig;
                                 msg->result = 0;  // Success
                                 
+                                DebugLogF("Config changed: 0x%02lx -> 0x%02lx", (ULONG)oldConfig, (ULONG)newConfig);
+                                
                                 // If mode changed, reinitialize adaptive system
                                 if (oldInterval != newInterval || 
                                     ((oldConfig ^ newConfig) & CONFIG_FIXED_MODE))
@@ -699,6 +701,7 @@ static void daemon(void)
                                         // Normal mode: use burstUs
                                         s_adaptiveInterval = s_activeMode->burstUs;
                                         s_pollInterval = s_activeMode->burstUs;
+                                        DebugLogF("Mode changed: %s (fixed %ldms)", s_activeMode->normalName, (LONG)(s_pollInterval / 1000));
                                     }
                                     else
                                     {
@@ -706,6 +709,7 @@ static void daemon(void)
                                         s_adaptiveState = POLL_STATE_IDLE;
                                         s_adaptiveInterval = s_activeMode->idleUs;
                                         s_pollInterval = s_activeMode->idleUs;
+                                        DebugLogF("Mode changed: %s (adaptive)", s_activeMode->adaptiveName);
                                     }
                                     
                                     s_adaptiveInactive = 0;
@@ -915,6 +919,8 @@ static inline void daemon_ProcessWheel(int delta)
     UWORD code = (delta > 0) ? NM_WHEEL_UP : NM_WHEEL_DOWN;
     int count = ((delta > 0) ? delta : -delta);
     
+    DebugLogF("Wheel: %s delta=%ld", (delta > 0) ? "UP" : "DOWN", (LONG)delta);
+    
     // Reuse s_eventBuf (only ie_Code and ie_Class change)
     s_eventBuf.ie_Code = code;
     
@@ -956,7 +962,7 @@ static inline void daemon_ProcessButtons(UWORD state)
         {
             code = NM_BUTTON_FOURTH | ((state & SAGA_BUTTON4_MASK) ? 0 : IECODE_UP_PREFIX);
         
-            //DebugLogF("Button 4 %s", (state & SAGA_BUTTON4_MASK) ? "pressed" : "released");
+            DebugLogF("Button 4: %s", (state & SAGA_BUTTON4_MASK) ? "PRESS" : "RELEASE");
 
             s_eventBuf.ie_Code = code;
             
@@ -971,7 +977,7 @@ static inline void daemon_ProcessButtons(UWORD state)
         {
             code = NM_BUTTON_FIFTH | ((state & SAGA_BUTTON5_MASK) ? 0 : IECODE_UP_PREFIX);
 
-            //DebugLogF("Button 5 %s", (state & SAGA_BUTTON5_MASK) ? "pressed" : "released");
+            DebugLogF("Button 5: %s", (state & SAGA_BUTTON5_MASK) ? "PRESS" : "RELEASE");
 
             s_eventBuf.ie_Code = code;
             
@@ -1116,7 +1122,6 @@ static inline ULONG daemon_GetAdaptiveInterval(BOOL hadActivity)
     
 
 #ifndef RELEASE
-#ifdef DEBUG_ADAPTIVE
     // Log state changes (even without interval change)
     if (s_configByte & CONFIG_DEBUG_MODE)
     {
@@ -1125,18 +1130,11 @@ static inline ULONG daemon_GetAdaptiveInterval(BOOL hadActivity)
         // State changed?
         if (oldState != s_adaptiveState)
         {
-            DebugLogF("[%s->%s] %ldus | InactiveUs=%ld", 
+            DebugLogF("Adaptive: [%s->%s] interval=%ldus", 
                       stateNames[oldState], stateNames[s_adaptiveState], 
-                      (LONG)s_adaptiveInterval, (LONG)s_adaptiveInactive);
-        }
-        // Interval changed but same state (progressive descent/ascent)
-        else if (s_adaptiveInterval != oldUs)
-        {
-            DebugLogF("[%s] %ldus | InactiveUs=%ld", 
-                      stateNames[s_adaptiveState], (LONG)s_adaptiveInterval, (LONG)s_adaptiveInactive);
+                      (LONG)s_adaptiveInterval);
         }
     }
-#endif
 #endif
 
     return s_adaptiveInterval;
