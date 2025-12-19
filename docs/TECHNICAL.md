@@ -1,6 +1,6 @@
 # Technical Documentation
 
-[]($PROGRAM_DESCRIPTION)Extended mouse driver for Apollo 68080 SAGA chipset[]()
+[]($PROGRAM_NAME)XMouseD[]() technical informations
 
 ## Startup
 
