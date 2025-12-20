@@ -65,10 +65,7 @@
   - [ ] Hot config examples
   - [ ] STATUS command documentation
   - [ ] Debug mode usage (DEV builds)
-- [ ] **README.md updates**
-  - [ ] Update config byte table
-  - [ ] Add adaptive mode explanation
-  - [ ] Update examples with new modes
+- [x] **README.md updates**
 - [ ] **CHANGELOG.md**
   - [ ] Document all v1.0 features
   - [ ] List breaking changes if any

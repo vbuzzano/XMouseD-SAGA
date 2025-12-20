@@ -41,7 +41,7 @@ $ReleaseDir = "$env:DIST_DIR\$env:PROGRAM_NAME-$escapedVersion"
 
 # create release directory
 if ((Test-Path $env:DIST_DIR)) {
-    Remove-item -Recurse -Force $env:DIST_DIR -ErrorAction SilentlyContinue
+    Remove-item -Recurse -Force $env:DIST_DIR -ErrorAction Stop
 }
 New-Item -ItemType Directory -Path $ReleaseDir | Out-Null
 
@@ -74,6 +74,7 @@ Copy-Item -Force "$env:ASSETS_DIR\Drawer.info" "$env:DIST_DIR\$env:PROGRAM_NAME-
 
 # Create LHA archive
 cd $env:DIST_DIR
-. ..\$env:LHATOOL -a $env:PROGRAM_NAME-$escapedVersion.lha $env:PROGRAM_NAME-$escapedVersion $env:PROGRAM_NAME-$escapedVersion\Install $env:PROGRAM_NAME-$escapedVersion\Install.info  $env:PROGRAM_NAME-$escapedVersion\$env:PROGRAM_EXE_NAME $env:PROGRAM_NAME-$escapedVersion\$env:PROGRAM_NAME.guide $env:PROGRAM_NAME-$escapedVersion\$env:PROGRAM_NAME.guide.info $env:PROGRAM_NAME-$escapedVersion.info $env:PROGRAM_NAME-$escapedVersion.readme $env:PROGRAM_NAME-$escapedVersion.readme.info
+. ..\$env:LHATOOL -at $env:PROGRAM_NAME-$escapedVersion.lha $env:PROGRAM_NAME-$escapedVersion\Install $env:PROGRAM_NAME-$escapedVersion\$env:PROGRAM_NAME.guide $env:PROGRAM_NAME-$escapedVersion.readme
+. ..\$env:LHATOOL -a $env:PROGRAM_NAME-$escapedVersion.lha $env:PROGRAM_NAME-$escapedVersion\$env:PROGRAM_EXE_NAME $env:PROGRAM_NAME-$escapedVersion\Install.info $env:PROGRAM_NAME-$escapedVersion\$env:PROGRAM_NAME.guide.info $env:PROGRAM_NAME-$escapedVersion.info $env:PROGRAM_NAME-$escapedVersion.readme.info
 . ..\$env:LHATOOL -l $env:PROGRAM_NAME-$escapedVersion.lha
 cd ..

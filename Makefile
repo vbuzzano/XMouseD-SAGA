@@ -93,7 +93,7 @@ release:
 	@echo ------------------------------------------------------------------
 	@echo Build Release: ${PROGRAM_NAME} Version: $(PROGRAM_VERSION)
 	@echo ------------------------- -----------------------------------------
-	@.\scripts\build-release.ps1
+	@pwsh .\scripts\build-release.ps1
 	@echo ------------------------- -----------------------------------------
 	@echo Release build completed: $(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)
 

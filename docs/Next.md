@@ -22,13 +22,13 @@
 
 ### Critical - Documentation Placeholders
 - [ ] **Run `.\scripts\env-replace.ps1`** on all files before release
-  - [ ] README.md
-  - [ ] XMouseD.guide
-  - [ ] XMouseD.readme
-  - [ ] CHANGELOG.md
-  - [ ] Install
-  - [ ] docs/TECHNICAL.md
-  - [ ] docs/VISION.md
+  - [x] README.md
+  - [x] XMouseD.guide
+  - [x] XMouseD.readme
+  - [x] CHANGELOG.md
+  - [ ] Install (PROBLEME avec build-release actuel, l'exe n'a pas de propriété E (executable) et après reboot user-startup plante car C:XMouseD pas executable)
+  - [x] docs/TECHNICAL.md
+  - [x] docs/VISION.md
   
   Format: `~ VALUE [VAR_ENV_NAME]~` → actual values
 
@@ -54,7 +54,7 @@
     + XMouseD-1.0/
        - Install
        - Install.info
-       - XMouseD (executable, no .exe extension!)
+       - XMouseD (executable, no .exe extension!) <--- manque bit 2 E (executable)
        - XMouseD.guide
        - XMouseD.guide.info
     - XMouseD-1.0.info

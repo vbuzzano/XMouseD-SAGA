@@ -50,7 +50,8 @@
 
 // $VERS: String
 #define VERSION_STRING "$VER: " \
-PROGRAM_NAME " " PROGRAM_VERSION " (" PROGRAM_DATE ") " PROGRAM_DESC_SHORT \ ", (c) " PROGRAM_AUTHOR
+PROGRAM_NAME " " PROGRAM_VERSION " (" PROGRAM_DATE ") " PROGRAM_DESC_SHORT \
+", (c) " PROGRAM_AUTHOR
 
 //===========================================================================
 // User Messages
