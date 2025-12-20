@@ -1,71 +1,98 @@
-# Next - Post v1.0 Release Tasks
+# Next - Post v1.0 Release & Testing
 
 ## ✅ Completed for v1.0
 - [x] Wheel scrolling (UP/DOWN)
-- [x] Extra buttons 4 & 5 support
+- [x] Extra buttons 4 & 5 support (code ready, testing pending)
 - [x] Adaptive polling system (8 modes)
 - [x] Hot config update (no restart)
 - [x] Debug mode toggle
 - [x] Message timeout fix (2s)
 - [x] Button-hold reactive fix
-- [x] Full documentation (README, .guide, .readme)
-- [x] Installer script
+- [x] Full documentation (README, .guide, .readme, USAGE.md)
+- [x] Installer script with contextual messages
 - [x] CHANGELOG.md
 - [x] Code analysis report (PROJECT_ANALYSIS.md)
 - [x] CONFIG_STOP renamed to CONFIG_FEATURES_MASK (clarity)
 - [x] VISION.md completed (Single-File Architecture + Design Principles)
+- [x] TECHNICAL.md with polling modes reference table
 - [x] Executable size: 5.96KB (<6KB target achieved)
 
 ---
 
-## 📋 TODO Before v1.0 Release
+## 📋 Testing & Validation (v1.0 RC)
+
+### Real Hardware Testing
+- [ ] **Test buttons 4 & 5 on real Vampire V4**
+  - Verify hardware reads from `$DFF212` bits 8-9
+  - Confirm event injection works with FreeWheel or IControl
+  - Test all modes (Adaptive/Normal profiles)
+
+- [ ] **Long-term stability test (multiple days)**
+  - Run XMouseD continuously for 48-72 hours
+  - Monitor for memory leaks, timer drift, or crashes
+  - Verify daemon stays responsive under heavy scrolling
+  - Check adaptive polling transitions work smoothly
+
+### Edge Cases
+- [ ] Hot config updates during active scrolling
+- [ ] Rapid mode switching (0x13 → 0x23 → 0x33 → 0x13)
+- [ ] ApolloWheel/other tools NOT running (verify no conflicts)
+- [ ] Reboot with User-Startup enabled
+
+---
+
+## 📋 Post-Testing (Before Final Release)
 
 ### Critical - Documentation Placeholders
-- [ ] **Run `.\scripts\env-replace.ps1`** on all files before release
+- [x] Run `.\scripts\env-replace.ps1` on all files before release
   - [x] README.md
   - [x] XMouseD.guide
   - [x] XMouseD.readme
   - [x] CHANGELOG.md
-  - [ ] Install (PROBLEME avec build-release actuel, l'exe n'a pas de propriété E (executable) et après reboot user-startup plante car C:XMouseD pas executable)
+  - [x] Install
   - [x] docs/TECHNICAL.md
   - [x] docs/VISION.md
   
   Format: `~ VALUE [VAR_ENV_NAME]~` → actual values
 
 ### Critical - Version Consistency
-- [ ] **Verify all version strings match `1.0`**:
+- [x] **Verify all version strings match `1.0`**:
   - [x] src/xmoused.c: `PROGRAM_VERSION "1.0"`
   - [x] src/xmoused.c: `PROGRAM_DATE "2025-12-18"` (current date)
-  - [ ] CHANGELOG.md: move `[Unreleased]` to `[1.0.0]` with date
-  - [ ] All docs using placeholders (will be updated by env-replace)
+  - [x] CHANGELOG.md: move `[Unreleased]` to `[1.0.0]` with date
+  - [x] All docs using placeholders (updated by env-replace)
 
 ### Critical - Build & Test
-- [ ] **Clean build**: `make clean && make MODE=release`
-- [ ] **Size check**: executable should be ~6KB
-- [ ] **Test on real Vampire V4**: All modes, wheel, buttons 4/5
-- [ ] **Test hot config**: mode switching without restart
-- [ ] **Test Installer script**: Full install path
+- [x] **Clean build**: `make clean && make MODE=release`
+- [x] **Size check**: executable should be ~6KB
+- [x] **Test on real Vampire V4**: Core wheel functionality
+- [ ] **Test buttons 4 & 5 on real Vampire V4**: *pending*
+- [x] **Test hot config**: mode switching without restart
+- [x] **Test Installer script**: Full install path
+- [ ] **Long-term stability test**: *pending (multiple days)*
 
-### Critical - Release Package
-- [ ] **Run `.\scripts\build-release.ps1`** to create LHA archive
-- [ ] **Verify archive structure**:
+### Release Package
+- [ ] **Run `.\scripts\build-release.ps1`** to create LHA archive (after testing complete)
+  - Verify LHA archive is 100% Amiga-compatible
+  - Test extraction and installation on real Amiga
+  - Update RELEASE_CHECK.md checklist
+- [x] **Verify archive structure**:
   ```
   XMouseD-1.0.lha
     + XMouseD-1.0/
        - Install
        - Install.info
-       - XMouseD (executable, no .exe extension!) <--- manque bit 2 E (executable)
+       - XMouseD (executable, no .exe extension!) <--- manque bit 2 E (executable) ajouter lors de l'install
        - XMouseD.guide
        - XMouseD.guide.info
     - XMouseD-1.0.info
     - XMouseD-1.0.readme
     - XMouseD-1.0.readme.info
   ```
-- [ ] **Test extraction and install from archive**
+- [x] **Test extraction and install from archive**
 
 ### Optional - Cleanup
-- [ ] **Archive or delete ROADMAP.md** (obsolete now)
-- [ ] **Move Next.md tasks to GitHub Issues** (for v1.1+ tracking)
+- [x] **Archive or delete ROADMAP.md** (obsolete now)
 
 ---
 
