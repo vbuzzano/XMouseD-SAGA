@@ -22,7 +22,7 @@
 ## 📋 Testing & Validation (v1.0 RC)
 
 ### Real Hardware Testing
-- [ ] **Test buttons 4 & 5 on real Vampire V4**
+- [x] **Test buttons 4 & 5 on real Vampire V4**
   - Verify hardware reads from `$DFF212` bits 8-9
   - Confirm event injection works with FreeWheel or IControl
   - Test all modes (Adaptive/Normal profiles)
@@ -34,10 +34,10 @@
   - Check adaptive polling transitions work smoothly
 
 ### Edge Cases
-- [ ] Hot config updates during active scrolling
-- [ ] Rapid mode switching (0x13 → 0x23 → 0x33 → 0x13)
-- [ ] ApolloWheel/other tools NOT running (verify no conflicts)
-- [ ] Reboot with User-Startup enabled
+- [x] Hot config updates during active scrolling
+- [x] Rapid mode switching (0x13 → 0x23 → 0x33 → 0x13)
+- [x] ApolloWheel/other tools NOT running (verify no conflicts)
+- [x] Reboot with User-Startup enabled
 
 ---
 
@@ -66,7 +66,7 @@
 - [x] **Clean build**: `make clean && make MODE=release`
 - [x] **Size check**: executable should be ~6KB
 - [x] **Test on real Vampire V4**: Core wheel functionality
-- [ ] **Test buttons 4 & 5 on real Vampire V4**: *pending*
+- [x] **Test buttons 4 & 5 on real Vampire V4**: *pending*
 - [x] **Test hot config**: mode switching without restart
 - [x] **Test Installer script**: Full install path
 - [ ] **Long-term stability test**: *pending (multiple days)*
