@@ -16,7 +16,7 @@ TOOLS_DIR = $(VENDOR_DIR)/tools
 
 # Source files
 SRC_XMOUSED = $(SRC_DIR)/xmoused.c
-SRC_XBTTS = $(SRC_DIR)/xbtts.c
+SRC_XBTTS = $(SRC_DIR)-xbtts/xbtts.c
 ASM = $(wildcard $(SRC_DIR)/*.s)
 
 EXE_FILE = $(DIST_DIR)/$(PROGRAM_EXE_NAME)
@@ -27,7 +27,6 @@ EXECMD_FILE = $(subst /,\,$(EXE_FILE))
 OBJ_XMOUSED = $(OBJ_DIR)/xmoused.o
 OBJ_XBTTS = $(OBJ_DIR)/xbtts.o
 ASM_XMOUSED = $(ASM_DIR)/xmoused.asm
-ASM_XBTTS = $(ASM_DIR)/xbtts.asm
 ASM_OBJS = $(patsubst $(SRC_DIR)/%.s,$(OBJ_DIR)/%.o,$(ASM))
 
 # Compiler and Linker
@@ -93,7 +92,7 @@ dirs:
 	@if not exist "$(DIST_DIR)" mkdir "$(DIST_DIR)"
 
 
-build: $(EXE_FILE) #$(ASM_XMOUSED) $(ASM_XBTTS)
+build: $(EXE_FILE) #$(ASM_XMOUSED)
 rebuild: clean build
 
 build-xbtts: $(EXE_XBTTS)

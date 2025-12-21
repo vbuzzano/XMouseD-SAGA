@@ -48,7 +48,7 @@
 #define MODE_NAME_REACTIVE      "REACTIVE"
 #define MODE_NAME_ECO           "ECO"
 
-#ifndef RELEASE
+#ifdef RELEASE
     #define PROGRAM_DESC_V          PROGRAM_DESC_SHORT
 #elif XBTTS
     #define PROGRAM_DESC_V          "XBTTS BUILD"
