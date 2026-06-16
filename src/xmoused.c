@@ -34,7 +34,7 @@
 
 // Changing port name breaks compatibility with third-party tools.
 #define DAEMON_PORT_NAME        "XMouseD_Port" // WARNING: Modify with caution!
-#define DAEMON_DESC_SHORT       PROGRAM_NAME" - SAGA - Daemon"
+#define DAEMON_DESC_SHORT       PROGRAM_NAME" [SAGA - Daemon]"
 
 // NORMAL Mode names
 #define MODE_NAME_MODERATE      "MODERATE"
