@@ -21,13 +21,13 @@ daemon_Init()
 
 Loop:
   Wait(CTRL+C | timer | port messages)
-  
+
   If timer:
     → Read wheel/buttons SAGA
     → Inject events if changed
     → Update interval (adaptive or fixed)
     → Restart timer
-  
+
   If message:
     → Process command (QUIT, SET_CONFIG, etc.)
     → Reply
@@ -183,7 +183,7 @@ else
 |---------|-------|----------|
 | `XMSG_CMD_QUIT` (0) | - | 0 |
 | `XMSG_CMD_SET_CONFIG` (1) | 0xBYTE | applied config |
-| `XMSG_CMD_GET_STATUS` (2) | - | (config << 16) \| ms |
+| `XMSG_CMD_GET_STATUS` (2) | - | config byte |
 
 
 **Message Structure**

@@ -11,8 +11,8 @@
     # ========================================================================
     Project = @{
         Name        = "XMouseD"
-        Version     = "1.0-rc1"
-        VersionDate = "20.12.2025"
+        Version     = "1.0"
+        VersionDate = "13.07.2026"
         Author      = "Vincent Buzzano"
         Description = "Extended mouse driver for Apollo 68080 SAGA chipset"
         DescShort   = "SAGA eXtended Mouse Driver"
@@ -82,10 +82,10 @@
     # ========================================================================
     Build = @{
         EXE_NAME = "XMouseD"
-        
+
         # Default CPU target (68000, 68020, 68040, 68080)
         DefaultCPU  = "68080"
-        
+
         # Default FPU (empty, 68020, 68040, 68080)
         #DefaultFPU  = "68080"
     }

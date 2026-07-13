@@ -1,7 +1,7 @@
 # Usage & Configuration
 
 []($PROGRAM_NAME)XMouseD[]() runs as a background daemon and can be controlled via command line
-argments. Configuration uses a simple hex byte format.
+arguments. Configuration uses a simple hex byte format.
 
 ## Basic Commands
 
@@ -11,7 +11,7 @@ Start, stop, or toggle XMouseD with these commands:
 XMouseD           # Toggle (start if stopped, stop if running)
 XMouseD START     # Start with default config (wheel+buttons)
 XMouseD STOP      # Stop daemon gracefully
-XMouseD 0xBYTE    # Start with custom config byte 
+XMouseD 0xBYTE    # Start with custom config byte
 ```
 
 ## Configuration
@@ -65,6 +65,7 @@ XMouseD 0x00      # Stop daemon
 | *(none)* | Toggle: start if stopped, stop if running |
 | `START` | Start daemon with default config (0x13) |
 | `STOP` | Stop daemon gracefully |
+| `STATUS` | Query daemon status and current config byte |
 | `0xBYTE` | Start with custom config (hex format) |
 
 ## Config Byte Reference

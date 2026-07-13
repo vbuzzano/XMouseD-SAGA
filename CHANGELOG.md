@@ -4,6 +4,14 @@ All notable changes to XMouseD will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+- Prevent undefined behavior in daemon timer loop by initializing activity/state locals before feature-gated polling paths.
+- `XMSG_CMD_GET_STATUS` response documented correctly as config byte (was wrongly described as `(config << 16) | ms` in TECHNICAL.md).
+- USAGE.md typo "argments" → "arguments".
+- USAGE.md Command Arguments table now includes `STATUS` command.
+
 ## [1.0] - 2025-12-18
 
 Initial release of XMouseD - Extended mouse driver for Apollo 68080 SAGA chipset.
