@@ -4,7 +4,7 @@ All notable changes to XMouseD will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.0] - ~ 14.07.2025 [PROGRAM_DATE]~
+## [1.0] - ~ 13.07.2026 [PROGRAM_DATE]~
 
 Initial release of XMouseD - Extended mouse driver for Apollo 68080 SAGA chipset.
 
