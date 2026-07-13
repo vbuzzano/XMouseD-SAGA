@@ -98,50 +98,68 @@ XMouseD offers two polling strategies: @{b}Adaptive@{ub} and @{b}Normal@{ub}.
 
 @{fg highlight}------------------------------------------------------------------------------@{fg text}
 
-@{b}ADAPTIVE MODES (Recommended)@{ub}
+@{b}ADAPTIVE vs NORMAL - What is the difference?@{ub}
 
-Smart polling that adjusts to your activity:
-  - When @{b}idle@{ub}: polls slowly (saves CPU)
-  - When @{b}scrolling@{ub}: speeds up instantly for smooth response
-  - Automatically transitions between idle/active/burst states
+  @{b}Adaptive@{ub}: polling speed changes automatically based on your activity.
+    - Slow when idle  (saves CPU, mouse "asleep")
+    - Speeds up when you start scrolling
+    - Returns to slow after a pause
+    Result: best of both worlds - efficient at rest, reactive when needed.
 
-Perfect for everyday use - responsive when needed, efficient at rest.
+  @{b}Normal@{ub}: polling speed is constant, never changes.
+    - Always polls at the same fixed interval
+    - No transitions, fully predictable behaviour
+    - Slightly higher average CPU usage than adaptive idle
+    Result: consistent feel, good if you dislike any variation.
 
-@{fg shine}Available Adaptive Modes:@{fg text}
-
-  @{b}COMFORT@{ub}    (0x03) - Occasional use, relaxed response
-                    Idle: 150ms -> Active: 60ms -> Burst: 20ms
-
-  @{b}BALANCED@{ub}   (0x13) - Default, best for most users
-                    Idle: 100ms -> Active: 30ms -> Burst: 10ms
-
-  @{b}REACTIVE@{ub}   (0x23) - Instant response, always ready
-                    Idle: 50ms -> Active: 15ms -> Burst: 5ms
-
-  @{b}ECO@{ub}        (0x33) - Minimal CPU usage, slow reactivity
-                    Idle: 200ms -> Active: 80ms -> Burst: 40ms
+  @{fg shine}In practice most users will not notice the difference.@{fg text}
+  Adaptive BALANCED (0x13) is the recommended starting point.
 
 @{fg highlight}------------------------------------------------------------------------------@{fg text}
 
-@{b}NORMAL MODES (Constant Polling)@{ub}
+@{b}ADAPTIVE MODES - ranked slowest to fastest burst speed@{ub}
 
-Fixed polling rate - same speed all the time, no variation.
+The name describes the @{b}character@{ub} of the mode, not a ranking.
+Burst speed (peak reactivity when actively scrolling) is what matters most.
 
-@{fg shine}Available Normal Modes:@{fg text}
+  @{b}ECO@{ub}        (0x33) - @{fg shine}Slowest burst: 40ms@{fg text}
+                    Idle 200ms -> Active 80ms -> Burst 40ms
+                    Minimal CPU. For light users or low-power setups.
+                    Scroll feel: slightly sluggish under fast movements.
 
-  @{b}MODERATE@{ub}    (0x43) - Constant 20ms polling
-  @{b}ACTIVE@{ub}      (0x53) - Constant 10ms polling (default rate)
-  @{b}INTENSIVE@{ub}   (0x63) - Constant 5ms polling (high CPU)
-  @{b}PASSIVE@{ub}     (0x73) - Constant 40ms polling (power saving)
+  @{b}COMFORT@{ub}    (0x03) - @{fg shine}Burst: 20ms@{fg text}
+                    Idle 150ms -> Active 60ms -> Burst 20ms
+                    Relaxed. Good for occasional, unhurried scrolling.
+
+  @{b}BALANCED@{ub}   (0x13) - @{fg shine}Burst: 10ms@{fg text} @{b}[DEFAULT]@{ub}
+                    Idle 100ms -> Active 30ms -> Burst 10ms
+                    Best for most users. Responsive without wasting CPU.
+
+  @{b}REACTIVE@{ub}   (0x23) - @{fg shine}Fastest burst: 5ms@{fg text}
+                    Idle 50ms -> Active 15ms -> Burst 5ms
+                    Instant response. For power users and fast scrolling.
+                    Higher CPU usage when scrolling.
+
+  Summary: ECO < COMFORT < BALANCED < REACTIVE (burst reactivity)
+
+@{fg highlight}------------------------------------------------------------------------------@{fg text}
+
+@{b}NORMAL MODES - constant polling, ranked slowest to fastest@{ub}
+
+  @{b}PASSIVE@{ub}     (0x73) - Constant 40ms  - minimal CPU, slow detection
+  @{b}MODERATE@{ub}    (0x43) - Constant 20ms  - light use
+  @{b}ACTIVE@{ub}      (0x53) - Constant 10ms  - equivalent to BALANCED burst
+  @{b}INTENSIVE@{ub}   (0x63) - Constant  5ms  - equivalent to REACTIVE burst
+                               always-on, highest CPU usage
 
 @{fg highlight}------------------------------------------------------------------------------@{fg text}
 
 @{b}Which Mode Should I Choose?@{ub}
 
-  - @{b}Most users@{ub}:      BALANCED (0x13) adaptive - best balance
-  - @{b}Low-power systems@{ub}: ECO (0x33) adaptive or PASSIVE (0x73)
-  - @{b}Gaming/fast work@{ub}: REACTIVE (0x23) adaptive
-  - @{b}Predictable feel@{ub}: ACTIVE (0x53) normal mode
+  - @{b}Most users@{ub}:       BALANCED (0x13) adaptive - best balance
+  - @{b}Low-power/quiet@{ub}:  ECO (0x33) adaptive or PASSIVE (0x73) normal
+  - @{b}Fast scrolling@{ub}:   REACTIVE (0x23) adaptive
+  - @{b}Predictable feel@{ub}: ACTIVE (0x53) normal (same speed as BALANCED burst)
 
 Try different modes to find your preference! Change anytime with
 hot config update (no restart needed).
