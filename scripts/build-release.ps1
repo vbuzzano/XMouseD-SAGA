@@ -39,25 +39,21 @@ Get-Content .env | ForEach-Object {
 $escapedVersion = $env:PROGRAM_VERSION -replace '[^A-Za-z0-9._-]', '_'
 $ReleaseDir = "$env:PROGRAM_NAME-$escapedVersion"
 
-# create release directory
-if ((Test-Path $env:DIST_DIR)) {
-    Remove-item -Recurse -Force $env:DIST_DIR -ErrorAction Stop
-}
-New-Item -ItemType Directory -Path "$env:DIST_DIR\$ReleaseDir" -ErrorAction Stop
-
-# UPDATE FILES
+# UPDATE FILES (in-place: updates template values, preserves markers)
 . $EnvReplace -Force -Path "$env:PROGRAM_EXE_NAME.readme"
 . $EnvReplace -Force -Path "$env:PROGRAM_EXE_NAME.guide"
 . $EnvReplace -Force -Path "Install"
 . $EnvReplace -Force -Path "docs\*.md"
 . $EnvReplace -Force -Path "*.md"
 
-# SOURCE
+# SOURCE: update #define constants from .env
 . $EnvReplace  -Recurse -Force -Path ".\src"
 
-# PROGRAM
-make clean
+# PROGRAM: clean dist/ and rebuild release binary
 make MODE=release rebuild
+
+# Create release directory AFTER build (dist/ now exists with only the binary)
+New-Item -ItemType Directory -Path "$env:DIST_DIR\$ReleaseDir" -Force -ErrorAction Stop | Out-Null
 Move-Item -Force "$env:DIST_DIR\$env:PROGRAM_EXE_NAME" "$env:DIST_DIR\$ReleaseDir"
 
 # GUIDE
