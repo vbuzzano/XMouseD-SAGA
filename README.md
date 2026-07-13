@@ -7,22 +7,22 @@
 
 ## What is it ?
 
-[]($PROGRAM_NAME)XMouseD[]() is a background daemon that reads USB mouse WHEEL and extra BUTTONS 
-4 and 5 directly from SAGA hardware registers and injects standard NewMouse 
-compatible scroll events into the Amiga input system. This enables mouse 
+[]($PROGRAM_NAME)XMouseD[]() is a background daemon that reads USB mouse WHEEL and extra BUTTONS
+4 and 5 directly from SAGA hardware registers and injects standard NewMouse
+compatible scroll events into the Amiga input system. This enables mouse
 wheel scrolling in compatible Amiga applications.
 
-For best experience on Workbench 3.1/3.9 use []($PROGRAM_NAME)XMouseD[]() with FreeWheel or 
-similar commodities that improve integration of wheel and buttons mapping. 
+For best experience on Workbench 3.1/3.9 use []($PROGRAM_NAME)XMouseD[]() with FreeWheel or
+similar commodities that improve integration of wheel and buttons mapping.
 
-On AmigaOS 3.2, enabling the "scroll wheel enabled" option in IControl 
-improves how applications receive and handle wheel events. Without such 
+On AmigaOS 3.2, enabling the "scroll wheel enabled" option in IControl
+improves how applications receive and handle wheel events. Without such
 tools the wheel works, but integration and extra features may be limited.
 
 
 *** Note ***
 
-avoid running []($PROGRAM_NAME)XMouseD[]() at the same time as ApolloWheel (or tools that also 
+avoid running []($PROGRAM_NAME)XMouseD[]() at the same time as ApolloWheel (or tools that also
 read SAGA mouse registers), since they can interfere with each other.
 
 
@@ -30,7 +30,7 @@ read SAGA mouse registers), since they can interfere with each other.
 
 ### ✅ Works On (SAGA Chipset with Apollo 68080)
 
-[]($PROGRAM_NAME)XMouseD[]() requires Apollo 68080 accelerators with SAGA chipset. 
+[]($PROGRAM_NAME)XMouseD[]() requires Apollo 68080 accelerators with SAGA chipset.
 
 Confirmed working on:
 
