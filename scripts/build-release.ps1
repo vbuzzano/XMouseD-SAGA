@@ -72,8 +72,8 @@ Copy-Item -Force "$env:ASSETS_DIR\Install.info" "$env:DIST_DIR\$ReleaseDir\Insta
 Move-Item -Force "$env:DIST_DIR\XMouseD.readme" "$env:DIST_DIR\$ReleaseDir.readme"
 Copy-Item -Force "$env:ASSETS_DIR\Ascii.info" "$env:DIST_DIR\$ReleaseDir.readme.info"
 
-## Folder
-Copy-Item -Force "$env:ASSETS_DIR\Drawer.info" "$env:DIST_DIR\$ReleaseDir\$ReleaseDir.info"
+## Folder icon (sits next to the XMouseD-1.0/ dir in the archive, not inside it)
+Copy-Item -Force "$env:ASSETS_DIR\Drawer.info" "$env:DIST_DIR\$ReleaseDir.info"
 
 
 # Create LHA archive
