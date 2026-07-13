@@ -125,7 +125,7 @@ xbtts:
 clean:
 	@if exist "$(ASM_DIR)\*" del /f /q "$(ASM_DIR)\*"
 	@if exist "$(OBJ_DIR)\*" del /f /q "$(OBJ_DIR)\*"
-	@if exist "$(DIST_DIR)\*" rd /s /q "$(DIST_DIR)"
+	@if exist "$(DIST_DIR)" rd /s /q "$(DIST_DIR)" && mkdir "$(DIST_DIR)"
 	@echo Cleaned build files while preserving directory structure
 
 # --- Upload to Vampire V4 ---
