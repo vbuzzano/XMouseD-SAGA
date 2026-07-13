@@ -27,11 +27,10 @@
   - Confirm event injection works with FreeWheel or IControl
   - Test all modes (Adaptive/Normal profiles)
 
-- [ ] **Long-term stability test (multiple days)**
-  - Run XMouseD continuously for 48-72 hours
-  - Monitor for memory leaks, timer drift, or crashes
-  - Verify daemon stays responsive under heavy scrolling
-  - Check adaptive polling transitions work smoothly
+- [x] **Long-term stability test** ✅ *Running on A6000 since December 2025 (~7 months)*
+  - No memory leaks, timer drift, or crashes observed
+  - Daemon stays responsive under heavy scrolling
+  - Adaptive polling transitions work smoothly
 
 ### Edge Cases
 - [x] Hot config updates during active scrolling
@@ -52,7 +51,7 @@
   - [x] Install
   - [x] docs/TECHNICAL.md
   - [x] docs/VISION.md
-  
+
   Format: `~ VALUE [VAR_ENV_NAME]~` → actual values
 
 ### Critical - Version Consistency
@@ -69,13 +68,12 @@
 - [x] **Test buttons 4 & 5 on real Vampire V4**: *pending*
 - [x] **Test hot config**: mode switching without restart
 - [x] **Test Installer script**: Full install path
-- [ ] **Long-term stability test**: *pending (multiple days)*
+- [x] **Long-term stability test**: *passed — running on A6000 since December 2025*
 
 ### Release Package
-- [ ] **Run `.\scripts\build-release.ps1`** to create LHA archive (after testing complete)
+- [x] **Run `.\scripts\build-release.ps1`** to create LHA archive
   - Verify LHA archive is 100% Amiga-compatible
   - Test extraction and installation on real Amiga
-  - Update RELEASE_CHECK.md checklist
 - [x] **Verify archive structure**:
   ```
   XMouseD-1.0.lha
@@ -145,14 +143,14 @@ When button 4/5 is held down:
 ## 📝 Release Checklist Summary
 
 1. ✅ Code complete and tested
-2. ⚠️ **Run env-replace.ps1** on all docs
-3. ⚠️ **Update PROGRAM_DATE** to release date
-4. ⚠️ **Move CHANGELOG [Unreleased] → [1.0.0]**
-5. ⚠️ **Clean build MODE=release**
-6. ⚠️ **Test on real hardware**
-7. ⚠️ **Run build-release.ps1**
-8. ⚠️ **Verify LHA structure**
-9. ✅ Git tag `v1.0.0`
+2. ✅ **Run env-replace.ps1** on all docs
+3. ✅ **Update PROGRAM_DATE** to 13.07.2026
+4. ✅ **Move CHANGELOG [Unreleased] → [1.0]**
+5. ✅ **Clean build MODE=release**
+6. ✅ **Test on real hardware**
+7. ✅ **Run build-release.ps1** (`make release` — 13.07.2026)
+8. ✅ **Verify LHA structure** (testé sur Amiga)
+9. ✅ Git tag `v1.0`
 10. ✅ GitHub release with LHA attachment
 
 

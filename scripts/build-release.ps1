@@ -81,7 +81,7 @@ Copy-Item -Force "$env:ASSETS_DIR\Drawer.info" "$env:DIST_DIR\$ReleaseDir\$Relea
 
 
 # Create LHA archive
-cd $env:DIST_DIR
+Set-Location $env:DIST_DIR
 . ..\$env:LHATOOL -a "$ReleaseDir.lha" "$ReleaseDir\$env:PROGRAM_EXE_NAME" "$ReleaseDir\Install" "$ReleaseDir\Install.info" "$ReleaseDir\$env:PROGRAM_NAME.guide" "$ReleaseDir\$env:PROGRAM_NAME.guide.info" "$ReleaseDir.info" "$ReleaseDir.readme" "$ReleaseDir.readme.info"
 . ..\$env:LHATOOL -l "$ReleaseDir.lha"
-cd ..
+Set-Location ..
