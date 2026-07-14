@@ -11,7 +11,7 @@
 @{fg text}
 @{fg highlight}------------------------------------------------------------------------------@{fg text}
 
-@{fg highlight}XMouseD@{fg text} is a lightweight background daemon that enables mouse wheel scrolling 
+@{fg highlight}XMouseD@{fg text} is a lightweight background daemon that enables mouse wheel scrolling
 and extra buttons (4/5) support on Vampire/@{b}Apollo@{ub} @{b}SAGA@{ub} systems.
 
 It monitors USB mouse hardware directly from @{b}SAGA@{ub} chipset registers and
@@ -23,13 +23,13 @@ injects standard NewMouse-compatible events into the Amiga input system.
 
 @{b}TABLE OF CONTENTS@{ub}
 
-  @{" Basic Usage          " link basicusage} - Commands and controls 
-  @{" Polling Modes        " link pollingmodes} - Adaptive vs Normal modes 
-  @{" Configuration        " link configuration} - Detailed settings 
-  @{" Compatibility        " link compatibility} - Supported hardware/OS 
-  @{" Troubleshooting      " link troubleshooting} - Common issues 
-  @{" Technical Details    " link technical} - How it works 
-  @{" License & Credits    " link license} - MIT License, author info 
+  @{" Basic Usage          " link basicusage} - Commands and controls
+  @{" Polling Modes        " link pollingmodes} - Adaptive vs Normal modes
+  @{" Configuration        " link configuration} - Detailed settings
+  @{" Compatibility        " link compatibility} - Supported hardware/OS
+  @{" Troubleshooting      " link troubleshooting} - Common issues
+  @{" Technical Details    " link technical} - How it works
+  @{" License & Credits    " link license} - MIT License, author info
 
 @{fg highlight}------------------------------------------------------------------------------@{fg text}
 
