@@ -1,3 +1,9 @@
+Short:         Mouse wheel & buttons 4/5 driver for Apollo SAGA
+Author:        reddoc007@gmail.com (Vincent Buzzano)
+Uploader:      reddoc007@gmail.com (Vincent Buzzano)
+Type:          driver/input
+Version:       ~ 1.0 [PROGRAM_VERSION]~
+Architecture:  m68k-amigaos
 
                                  ~ XMouseD [PROGRAM_NAME]~ v~ 1.0 [PROGRAM_VERSION]~
 

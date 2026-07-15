@@ -67,9 +67,12 @@ Copy-Item -Force "$env:ASSETS_DIR\Guide.info" "$env:DIST_DIR\$ReleaseDir\$env:PR
 Move-Item -Force "$env:DIST_DIR\Install" "$env:DIST_DIR\$ReleaseDir\Install"
 Copy-Item -Force "$env:ASSETS_DIR\Install.info" "$env:DIST_DIR\$ReleaseDir\Install.info"
 
-# README
+# README - Aminet requires LF line endings (not CRLF)
 . $EnvReplace -Force -OutputDir ".\dist" -Path "XMouseD.readme"
 Move-Item -Force "$env:DIST_DIR\XMouseD.readme" "$env:DIST_DIR\$ReleaseDir.readme"
+$readmePath = "$env:DIST_DIR\$ReleaseDir.readme"
+$lf = [System.IO.File]::ReadAllText($readmePath) -replace "`r`n", "`n"
+[System.IO.File]::WriteAllText($readmePath, $lf, [System.Text.Encoding]::UTF8)
 Copy-Item -Force "$env:ASSETS_DIR\Ascii.info" "$env:DIST_DIR\$ReleaseDir.readme.info"
 
 ## Folder icon (sits next to the XMouseD-1.0/ dir in the archive, not inside it)
