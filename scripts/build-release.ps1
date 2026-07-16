@@ -36,8 +36,11 @@ Get-Content .env | ForEach-Object {
     }
 }
 
-$escapedVersion = $env:PROGRAM_VERSION -replace '[^A-Za-z0-9._-]', '_'
-$ReleaseDir = "$env:PROGRAM_NAME-$escapedVersion"
+$ProgramName = "$env:PROGRAM_NAME"
+$Version = $env:PROGRAM_VERSION -replace '[^A-Za-z0-9._-]', '_'
+$ReleaseDir = "$ProgramName-$Version"
+$AssetsDir = "$env:ASSETS_DIR"
+$DistDir = "$env:DIST_DIR"
 
 # UPDATE FILES (in-place: updates template values, preserves markers)
 . $EnvReplace -Force -Path "$env:PROGRAM_EXE_NAME.readme"
@@ -53,34 +56,44 @@ $ReleaseDir = "$env:PROGRAM_NAME-$escapedVersion"
 make MODE=release rebuild
 
 # Create release directory AFTER build (dist/ now exists with only the binary)
-New-Item -ItemType Directory -Path "$env:DIST_DIR\$ReleaseDir" -Force -ErrorAction Stop | Out-Null
-Move-Item -Force "$env:DIST_DIR\$env:PROGRAM_EXE_NAME" "$env:DIST_DIR\$ReleaseDir"
+New-Item -ItemType Directory -Path "$DistDir\$ReleaseDir" -Force -ErrorAction Stop | Out-Null
+Move-Item -Force "$DistDir\$env:PROGRAM_EXE_NAME" "$DistDir\$ReleaseDir"
 
 # GUIDE
 . $EnvReplace  -Force -OutputDir ".\dist" -Path "XMouseD.guide"
-Move-Item -Force "$env:DIST_DIR\XMouseD.guide" "$env:DIST_DIR\$ReleaseDir\$env:PROGRAM_NAME.guide"
-Copy-Item -Force "$env:ASSETS_DIR\Guide.info" "$env:DIST_DIR\$ReleaseDir\$env:PROGRAM_NAME.guide.info"
+Move-Item -Force "$DistDir\XMouseD.guide" "$DistDir\$ReleaseDir\$ProgramName.guide"
+Copy-Item -Force "$AssetsDir\Guide.info" "$DistDir\$ReleaseDir\$ProgramName.guide.info"
 
 
 # INSTALL
 . $EnvReplace -Force -OutputDir ".\dist" -Path "Install"
-Move-Item -Force "$env:DIST_DIR\Install" "$env:DIST_DIR\$ReleaseDir\Install"
-Copy-Item -Force "$env:ASSETS_DIR\Install.info" "$env:DIST_DIR\$ReleaseDir\Install.info"
+Move-Item -Force "$DistDir\Install" "$DistDir\$ReleaseDir\Install"
+Copy-Item -Force "$AssetsDir\Install.info" "$DistDir\$ReleaseDir\Install.info"
 
 # README - Aminet requires LF line endings (not CRLF)
 . $EnvReplace -Force -OutputDir ".\dist" -Path "XMouseD.readme"
-Move-Item -Force "$env:DIST_DIR\XMouseD.readme" "$env:DIST_DIR\$ReleaseDir.readme"
-$readmePath = "$env:DIST_DIR\$ReleaseDir.readme"
+Move-Item -Force "$DistDir\XMouseD.readme" "$DistDir\$ReleaseDir.readme"
+$readmePath = "$DistDir\$ReleaseDir.readme"
 $lf = [System.IO.File]::ReadAllText($readmePath) -replace "`r`n", "`n"
 [System.IO.File]::WriteAllText($readmePath, $lf, [System.Text.Encoding]::UTF8)
-Copy-Item -Force "$env:ASSETS_DIR\Ascii.info" "$env:DIST_DIR\$ReleaseDir.readme.info"
+Copy-Item -Force "$AssetsDir\Ascii.info" "$DistDir\$ReleaseDir.readme.info"
 
 ## Folder icon (sits next to the XMouseD-1.0/ dir in the archive, not inside it)
-Copy-Item -Force "$env:ASSETS_DIR\Drawer.info" "$env:DIST_DIR\$ReleaseDir.info"
+Copy-Item -Force "$AssetsDir\Drawer.info" "$DistDir\$ReleaseDir.info"
 
 
 # Create LHA archive
-Set-Location $env:DIST_DIR
-. ..\$env:LHATOOL -a "$ReleaseDir.lha" "$ReleaseDir\$env:PROGRAM_EXE_NAME" "$ReleaseDir\Install" "$ReleaseDir\Install.info" "$ReleaseDir\$env:PROGRAM_NAME.guide" "$ReleaseDir\$env:PROGRAM_NAME.guide.info" "$ReleaseDir.info" "$ReleaseDir.readme" "$ReleaseDir.readme.info"
+Set-Location $DistDir
+. ..\$env:LHATOOL -a "$ReleaseDir.lha" "$ReleaseDir\$env:PROGRAM_EXE_NAME" "$ReleaseDir\Install" "$ReleaseDir\Install.info" "$ReleaseDir\$ProgramName.guide" "$ReleaseDir\$ProgramName.guide.info" "$ReleaseDir.info" "$ReleaseDir.readme" "$ReleaseDir.readme.info"
 . ..\$env:LHATOOL -l "$ReleaseDir.lha"
 Set-Location ..
+
+# finaliye readme
+# clean
+New-Item -ItemType Directory -Path "$DistDir\Aminet" -Force -ErrorAction Stop | Out-Null
+Copy-Item -Force "$DistDir\$ReleaseDir.lha" "$DistDir\Aminet\$ProgramName.lha"
+Move-Item -Force "$DistDir\$ReleaseDir.readme" "$DistDir\Aminet\$ProgramName.readme"
+Remove-Item -Force -Recurse "$DistDir\$ReleaseDir.readme.info"
+Remove-Item -Force -Recurse "$DistDir\$ReleaseDir"
+Remove-Item -Force "$DistDir\$ReleaseDir.info"
+
