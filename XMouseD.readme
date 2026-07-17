@@ -131,6 +131,17 @@ Initial release with full feature set:
 -----------------------------------------------------------------------------
 
 
+ACKNOWLEDGMENTS
+
+
+This project was inspired by ~ XMouseD [PROGRAM_NAME]~ by RedBug/ApolloTeam,
+which pioneered SAGA mouse wheel support on Vampire V4. While ~ XMouseD [PROGRAM_NAME]~ is
+a complete rewrite with modern daemon architecture and adaptive polling, the original
+ApolloWheel served as a valuable learning reference during development.
+
+-----------------------------------------------------------------------------
+
+
 SUPPORT
 
 
