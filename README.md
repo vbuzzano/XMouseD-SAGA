@@ -112,6 +112,12 @@ Found a bug? Have a feature request? Open an issue on GitHub.
 For bug reports, feature requests, or questions:
 https://github.com/vbuzzano/XMouse-Saga
 
+## Acknowledgments
+
+This project was inspired by **ApolloWheel** by RedBug/ApolloTeam, which pioneered SAGA mouse wheel support on Vampire V4. While XMouseD is a complete rewrite with a modern daemon architecture and adaptive polling system, the original ApolloWheel served as a valuable learning reference during development.
+
+---
+
 Special thanks to Apollo Team, Amiga community, and VBCC developers.
 
 Author: []($PROGRAM_AUTHOR)Vincent Buzzano[]()
