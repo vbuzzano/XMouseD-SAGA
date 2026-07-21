@@ -15,7 +15,7 @@
         VersionDate = "13.07.2026"
         Author      = "Vincent Buzzano"
         Description = "Extended mouse driver for Apollo 68080 SAGA chipset"
-        DescShort   = "SAGA eXtended Mouse Driver"
+        DescShort   = "Mouse wheel&buttons 4/5 driver f. Apollo"
     }
 
     # ========================================================================
