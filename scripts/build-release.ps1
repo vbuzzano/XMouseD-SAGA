@@ -60,8 +60,8 @@ New-Item -ItemType Directory -Path "$DistDir\$ReleaseDir" -Force -ErrorAction St
 Move-Item -Force "$DistDir\$env:PROGRAM_EXE_NAME" "$DistDir\$ReleaseDir"
 
 # GUIDE
-. $EnvReplace  -Force -OutputDir ".\dist" -Path "XMouseD.guide"
-Move-Item -Force "$DistDir\XMouseD.guide" "$DistDir\$ReleaseDir\$ProgramName.guide"
+. $EnvReplace  -Force -OutputDir ".\dist" -Path "$env:PROGRAM_EXE_NAME.guide"
+Move-Item -Force "$DistDir\$env:PROGRAM_EXE_NAME.guide" "$DistDir\$ReleaseDir\$ProgramName.guide"
 Copy-Item -Force "$AssetsDir\Guide.info" "$DistDir\$ReleaseDir\$ProgramName.guide.info"
 
 
@@ -71,14 +71,14 @@ Move-Item -Force "$DistDir\Install" "$DistDir\$ReleaseDir\Install"
 Copy-Item -Force "$AssetsDir\Install.info" "$DistDir\$ReleaseDir\Install.info"
 
 # README - Aminet requires LF line endings (not CRLF)
-. $EnvReplace -Force -OutputDir ".\dist" -Path "XMouseD.readme"
-Move-Item -Force "$DistDir\XMouseD.readme" "$DistDir\$ReleaseDir.readme"
+. $EnvReplace -Force -OutputDir ".\dist" -Path "$env:PROGRAM_EXE_NAME.readme"
+Move-Item -Force "$DistDir\$env:PROGRAM_EXE_NAME.readme" "$DistDir\$ReleaseDir.readme"
 $readmePath = "$DistDir\$ReleaseDir.readme"
 $lf = [System.IO.File]::ReadAllText($readmePath) -replace "`r`n", "`n"
 [System.IO.File]::WriteAllText($readmePath, $lf, [System.Text.Encoding]::UTF8)
 Copy-Item -Force "$AssetsDir\Ascii.info" "$DistDir\$ReleaseDir.readme.info"
 
-## Folder icon (sits next to the XMouseD-1.0/ dir in the archive, not inside it)
+## Folder icon (sits next to the dir in the archive, not inside it)
 Copy-Item -Force "$AssetsDir\Drawer.info" "$DistDir\$ReleaseDir.info"
 
 
