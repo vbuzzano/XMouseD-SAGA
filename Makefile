@@ -105,9 +105,6 @@ rebuild-release: clean build-release
 
 
 release:
-	@echo ------------------------------------------------------------------
-	@echo Build Release: ${PROGRAM_NAME} Version: $(PROGRAM_VERSION)
-	@echo ------------------------------------------------------------------
 	@pwsh .\scripts\build-release.ps1
 	@echo ------------------------------------------------------------------
 	@echo Release build completed: $(DIST_DIR)\$(PROGRAM_NAME)-$(PROGRAM_VERSION)
